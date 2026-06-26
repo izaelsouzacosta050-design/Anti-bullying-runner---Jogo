@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color"
+content="#0066ff">
+
+<meta name="description"
+content="Anti-Bullying Runner V2.0 Ultra">
+
+<title>
+ANTI-BULLYING RUNNER V2.0 ULTRA
+</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect"
+href="https://fonts.gstatic.com"
+crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<link rel="stylesheet"
+href="style.css">
+
+</head>
+
+<body>
+
+<!-- ====================================================== -->
+<!-- LOADING -->
+<!-- ====================================================== -->
+
+<div id="loadingScreen">
+
+<div class="loadingLogo">
+
+ANTI-BULLYING<br>
+
+RUNNER
+
+</div>
+
+<div class="loadingBar">
+
+<div id="loadingProgress"></div>
+
+</div>
+
+<p id="loadingText">
+
+Carregando...
+
+</p>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- MENU PRINCIPAL -->
+<!-- ====================================================== -->
+
+<div id="mainMenu">
+
+<header>
+
+<h1>
+
+ANTI-BULLYING RUNNER
+
+</h1>
+
+<p>
+
+Corra • Decida • Faça a diferença
+
+</p>
+
+</header>
+
+<div class="avatarArea">
+
+<img
+id="avatarImage"
+src="assets/ui/default-avatar.png">
+
+<input
+type="text"
+id="playerName"
+maxlength="18"
+placeholder="Nome">
+
+</div>
+
+<nav>
+
+<button id="playButton">
+
+JOGAR
+
+</button>
+
+<button id="shopButton">
+
+LOJA
+
+</button>
+
+<button id="heroesButton">
+
+PERSONAGENS
+
+</button>
+
+<button id="skinsButton">
+
+VESTES
+
+</button>
+
+<button id="missionsButton">
+
+MISSÕES
+
+</button>
+
+<button id="leaderboardButton">
+
+TOP RUN
+
+</button>
+
+<button id="settingsButton">
+
+CONFIGURAÇÕES
+
+</button>
+
+<button id="creditsButton">
+
+CRÉDITOS
+
+</button>
+
+</nav>
+
+<footer>
+
+Projeto Educativo
+
+</footer>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- GAME -->
+<!-- ====================================================== -->
+
+<div id="gameContainer">
+
+<canvas id="gameCanvas">
+
+</canvas>
+
+<!-- HUD -->
+
+<div id="hud">
+
+<div class="hudLeft">
+
+<div>
+
+❤️
+
+<span id="lifeValue">
+
+3
+
+</span>
+
+</div>
+
+<div>
+
+🪙
+
+<span id="coinValue">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+💎
+
+<span id="gemValue">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+⭐
+
+<span id="xpValue">
+
+0
+
+</span>
+
+</div>
+
+</div>
+
+<div class="hudCenter">
+
+<div>
+
+DISTÂNCIA
+
+<span id="distanceValue">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+RECORDE
+
+<span id="recordValue">
+
+0
+
+</span>
+
+</div>
+
+</div>
+
+<div class="hudRight">
+
+<div>
+
+🛡
+
+<span id="shieldCounter">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+🚀
+
+<span id="jetpackCounter">
+
+0
+
+</span>
+
+</div>
+
+<div>
+
+🧲
+
+<span id="magnetCounter">
+
+0
+
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- PERGUNTA -->
+<!-- ====================================================== -->
+
+<div id="questionModal">
+
+<h2>
+
+Desafio Anti-Bullying
+
+</h2>
+
+<p id="questionText">
+
+Pergunta
+
+</p>
+
+<button class="answer">
+
+Resposta 1
+
+</button>
+
+<button class="answer">
+
+Resposta 2
+
+</button>
+
+<button class="answer">
+
+Resposta 3
+
+</button>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- LOJA -->
+<!-- ====================================================== -->
+
+<div id="shopMenu">
+
+<h2>
+
+LOJA
+
+</h2>
+
+<div id="shopCategories">
+
+<button>
+
+Personagens
+
+</button>
+
+<button>
+
+Vestes
+
+</button>
+
+<button>
+
+Power-ups
+
+</button>
+
+<button>
+
+Temas
+
+</button>
+
+<button>
+
+Músicas
+
+</button>
+
+<button>
+
+Emotes
+
+</button>
+
+<button>
+
+Acessórios
+
+</button>
+
+</div>
+
+<div id="shopItems">
+
+</div>
+
+<button class="closeWindow">
+
+Fechar
+
+</button>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- PERSONAGENS -->
+<!-- ====================================================== -->
+
+<div id="heroesMenu">
+
+<h2>
+
+HERÓIS
+
+</h2>
+
+<div id="heroesGrid">
+
+</div>
+
+<button class="closeWindow">
+
+Fechar
+
+</button>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- CONFIGURAÇÕES -->
+<!-- ====================================================== -->
+
+<div id="settingsMenu">
+
+<h2>
+
+CONFIGURAÇÕES
+
+</h2>
+
+<section>
+
+<label>
+
+Idioma
+
+</label>
+
+<select id="language">
+
+<option>
+
+Português
+
+</option>
+
+<option>
+
+English
+
+</option>
+
+<option>
+
+Español
+
+</option>
+
+</select>
+
+</section>
+
+<section>
+
+<label>
+
+Tema
+
+</label>
+
+<select id="theme">
+
+<option>
+
+Azul
+
+</option>
+
+<option>
+
+Escuro
+
+</option>
+
+<option>
+
+Claro
+
+</option>
+
+<option>
+
+Roxo
+
+</option>
+
+<option>
+
+Verde
+
+</option>
+
+<option>
+
+Laranja
+
+</option>
+
+</select>
+
+</section>
+
+<section>
+
+<label>
+
+Volume Música
+
+</label>
+
+<input
+type="range"
+min="0"
+max="100"
+value="70">
+
+</section>
+
+<section>
+
+<label>
+
+Volume Sons
+
+</label>
+
+<input
+type="range"
+min="0"
+max="100"
+value="70">
+
+</section>
+
+<section>
+
+<label>
+
+Tela Cheia
+
+</label>
+
+<input
+type="checkbox">
+
+</section>
+
+<button class="closeWindow">
+
+Salvar
+
+</button>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- GAME OVER -->
+<!-- ====================================================== -->
+
+<div id="gameOver">
+
+<h1>
+
+GAME OVER
+
+</h1>
+
+<p>
+
+Pontuação
+
+<span id="finalScore">
+
+0
+
+</span>
+
+</p>
+
+<p>
+
+Distância
+
+<span id="finalDistance">
+
+0
+
+</span>
+
+</p>
+
+<p>
+
+Moedas
+
+<span id="finalCoins">
+
+0
+
+</span>
+
+</p>
+
+<button id="playAgain">
+
+Jogar Novamente
+
+</button>
+
+<button id="backMenu">
+
+Menu
+
+</button>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- RANKING -->
+<!-- ====================================================== -->
+
+<div id="leaderboard">
+
+<h2>
+
+TOP RUN
+
+</h2>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>
+
+#
+
+</th>
+
+<th>
+
+Jogador
+
+</th>
+
+<th>
+
+Recorde
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody
+id="leaderboardBody">
+
+</tbody>
+
+</table>
+
+<button class="closeWindow">
+
+Fechar
+
+</button>
+
+</div>
+
+<!-- ====================================================== -->
+<!-- ÁUDIOS -->
+<!-- ====================================================== -->
+
+<audio
+id="menuMusic"
+loop>
+
+</audio>
+
+<audio
+id="gameMusic"
+loop>
+
+</audio>
+
+<audio
+id="coinSound">
+
+</audio>
+
+<audio
+id="jumpSound">
+
+</audio>
+
+<audio
+id="hitSound">
+
+</audio>
+
+<audio
+id="powerSound">
+
+</audio>
+
+<audio
+id="questionSound">
+
+</audio>
+
+<audio
+id="gameOverSound">
+
+</audio>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
