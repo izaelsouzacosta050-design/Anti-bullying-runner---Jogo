@@ -1,964 +1,923 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  color: #f5f3ff;
-  background: #0d0221;
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  line-height: 1.4;
-}
-
-button,
-input {
-  font-family: inherit;
-}
-
-button {
-  border: none;
-  background: none;
-  color: inherit;
-  cursor: pointer;
-}
-
-.hidden {
-  display: none !important;
-}
-
-:root {
-  --bg-deep: #0d0221;
-  --bg-mid: #1a0b3d;
-  --bg-elevated: #241454;
-  --accent-primary: #ff2e9a;
-  --accent-secondary: #00e5ff;
-  --accent-tertiary: #ffe600;
-  --text-primary: #f5f3ff;
-  --text-secondary: #b9aee0;
-  --text-muted: #786a9e;
-  --surface: rgba(255, 255, 255, 0.06);
-  --surface-strong: rgba(255, 255, 255, 0.12);
-  --border-soft: rgba(255, 255, 255, 0.12);
-  --color-coin: #ffd24c;
-  --color-gem: #7ad7ff;
-  --color-danger: #ff4d6d;
-  --color-success: #3ddc84;
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 22px;
-  --radius-pill: 999px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --frame-max-width: 520px;
-}
-
-body[data-theme="forest"] {
-  --bg-deep: #07140f;
-  --bg-mid: #0e2a1d;
-  --bg-elevated: #163d29;
-  --accent-primary: #4ade80;
-  --accent-secondary: #ffd166;
-  --accent-tertiary: #7af0c8;
-  --text-primary: #eafff0;
-  --text-secondary: #a4d8b9;
-  --text-muted: #5f9577;
-}
-
-body[data-theme="ocean"] {
-  --bg-deep: #021423;
-  --bg-mid: #06314c;
-  --bg-elevated: #0a4566;
-  --accent-primary: #22c3ff;
-  --accent-secondary: #7afcff;
-  --accent-tertiary: #ffb86b;
-  --text-primary: #eafcff;
-  --text-secondary: #8fc9dd;
-  --text-muted: #4f7e92;
-}
-
-body[data-theme="sunset"] {
-  --bg-deep: #240b30;
-  --bg-mid: #4a1644;
-  --bg-elevated: #642355;
-  --accent-primary: #ff7a59;
-  --accent-secondary: #ffd36e;
-  --accent-tertiary: #ff4f9a;
-  --text-primary: #fff3ec;
-  --text-secondary: #e0a9b8;
-  --text-muted: #a06a7c;
-}
-
-h1,
-h2,
-h3 {
-  font-weight: 900;
-  letter-spacing: 0.5px;
-}
-
-p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-
-.app-root {
-  position: relative;
-  width: 100%;
-  max-width: var(--frame-max-width);
-  height: 100%;
-  background: var(--bg-deep);
-  overflow: hidden;
-  isolation: isolate;
-}
-
-.screen {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  background: var(--bg-deep);
-}
-
-.global-toolbar {
-  position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
-  z-index: 500;
-  display: flex;
-  gap: var(--space-2);
-}
-
-.icon-btn,
-.btn-back {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#btn-mute .icon-off {
-  display: none;
-}
-
-#btn-mute[data-state="muted"] .icon-on {
-  display: none;
-}
-
-#btn-mute[data-state="muted"] .icon-off {
-  display: inline;
-}
-
-.subscreen-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-4);
-  flex-shrink: 0;
-}
-
-.header-spacer {
-  width: 40px;
-}
-
-.menu-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: 15px 22px;
-  margin-bottom: var(--space-3);
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  color: var(--text-primary);
-  font-weight: 800;
-  font-size: 0.95rem;
-}
-
-.menu-btn-primary {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: #0a0014;
-  border: none;
-}
-
-.menu-btn-ghost {
-  background: transparent;
-}
-
-.menu-btn-icon {
-  font-size: 1.2rem;
-  width: 26px;
-  text-align: center;
-}
-
-.btn-small {
-  padding: 10px 18px;
-  border-radius: var(--radius-pill);
-  background: var(--accent-primary);
-  color: #0a0014;
-  font-weight: 800;
-}
-
-.btn-danger {
-  background: var(--color-danger);
-  color: white;
-}
-
-.currency-bar {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.currency-chip,
-.hud-chip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  font-weight: 800;
-  font-size: 0.85rem;
-}
-
-.xp-bar-track {
-  position: relative;
-  width: 100%;
-  height: 10px;
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  overflow: hidden;
-}
-
-.xp-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--accent-secondary), var(--accent-primary));
-}
-
-.xp-bar-label {
-  display: block;
-  text-align: center;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  margin-top: 4px;
-  font-weight: 700;
-}
-
-.screen-loading {
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.loading-bg-layer {
-  position: absolute;
-  inset: 0;
-}
-
-.layer-stars {
-  background-image:
-    radial-gradient(2px 2px at 10% 20%, #fff, transparent),
-    radial-gradient(2px 2px at 80% 10%, #00e5ff, transparent),
-    radial-gradient(1.5px 1.5px at 30% 70%, #fff, transparent),
-    radial-gradient(2px 2px at 60% 85%, #ffe600, transparent);
-  opacity: 0.6;
-}
-
-.layer-tracks {
-  background: repeating-linear-gradient(to bottom, transparent 0px, transparent 46px, rgba(0, 229, 255, 0.35) 48px, transparent 50px);
-  transform: perspective(300px) rotateX(55deg) scale(2.4);
-  transform-origin: center bottom;
-  bottom: -10%;
-  height: 60%;
-  opacity: 0.5;
-}
-
-.loading-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-5);
-  padding: var(--space-5);
-  width: 100%;
-  max-width: 380px;
-  text-align: center;
-}
-
-.game-logo {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.05;
-}
-
-.logo-line-1 {
-  font-size: clamp(1.4rem, 7vw, 2rem);
-}
-
-.logo-line-2 {
-  font-size: clamp(2.2rem, 11vw, 3.2rem);
-  color: var(--accent-primary);
-}
-
-.loading-character {
-  height: 90px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.loading-bar-track {
-  position: relative;
-  width: 100%;
-  height: 22px;
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  overflow: hidden;
-}
-
-.loading-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-}
-
-.loading-bar-percent {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-
-.loading-footer {
-  position: absolute;
-  bottom: var(--space-4);
-  width: 100%;
-  text-align: center;
-  font-size: 0.65rem;
-  color: var(--text-muted);
-  z-index: 2;
-}
-
-.sprite {
-  position: relative;
-  width: 56px;
-  height: 84px;
-}
-
-.sprite-knight {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 34px;
-  height: 38px;
-  transform: translateX(-50%);
-  border-radius: 50% 50% 38% 38%;
-  background: linear-gradient(180deg, var(--accent-secondary) 0%, var(--accent-secondary) 38%, var(--bg-deep) 38%, var(--bg-deep) 46%, var(--accent-primary) 46%, var(--accent-primary) 100%);
-}
-
-.sprite-knight::before,
-.sprite-knight::after {
-  content: "";
-  position: absolute;
-  bottom: -28px;
-  width: 12px;
-  height: 30px;
-  border-radius: 4px;
-  background: linear-gradient(180deg, var(--accent-primary), var(--bg-mid));
-}
-
-.sprite-knight::before {
-  left: 2px;
-}
-
-.sprite-knight::after {
-  right: 2px;
-}
-
-.sprite-idle .sprite-knight {
-  animation: knightBob 1.6s ease-in-out infinite;
-}
-
-.sprite-run .sprite-knight {
-  animation: knightBob 0.32s ease-in-out infinite;
-}
-
-.sprite-run .sprite-knight::before {
-  animation: legRunSwing 0.32s ease-in-out infinite;
-}
-
-.sprite-run .sprite-knight::after {
-  animation: legRunSwing 0.32s ease-in-out infinite reverse;
-}
-
-@keyframes knightBob {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-4px); }
-}
-
-@keyframes legRunSwing {
-  0% { transform: rotate(35deg); }
-  50% { transform: rotate(-35deg); }
-  100% { transform: rotate(35deg); }
-}
-
-.screen-menu {
-  position: relative;
-  padding: var(--space-4);
-  gap: var(--space-3);
-}
-
-.menu-bg-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.layer-parallax-far {
-  background: linear-gradient(180deg, var(--bg-mid) 0%, var(--bg-deep) 70%);
-}
-
-.layer-parallax-near {
-  background-image: repeating-linear-gradient(to right, transparent 0, transparent 18%, rgba(0, 229, 255, 0.1) 18.4%, transparent 18.8%);
-}
-
-.layer-vignette {
-  background: radial-gradient(ellipse at 50% 30%, transparent 40%, rgba(0, 0, 0, 0.55) 100%);
-}
-
-.menu-topbar,
-.menu-xp-wrap,
-.menu-hero,
-.menu-character-stage,
-.menu-actions,
-.menu-footer {
-  position: relative;
-  z-index: 2;
-}
-
-.menu-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
-.player-badge {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 6px 12px 6px 6px;
-  border-radius: var(--radius-pill);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  max-width: 60%;
-}
-
-.player-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--bg-elevated);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.player-info {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  overflow: hidden;
-}
-
-.player-name {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.player-level {
-  font-size: 0.65rem;
-  color: var(--accent-tertiary);
-  font-weight: 700;
-}
-
-.menu-hero {
-  text-align: center;
-}
-
-.menu-title {
-  display: flex;
-  flex-direction: column;
-}
-
-.menu-title-accent {
-  color: var(--accent-primary);
-  font-size: 2rem;
-}
-
-.menu-character-stage {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.menu-stage-ground {
-  width: 90px;
-  height: 16px;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.45), transparent 75%);
-}
-
-.howto-content,
-.settings-content,
-.ranking-content {
-  padding: 0 var(--space-4) var(--space-5);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.howto-card,
-.settings-card,
-.shop-card,
-.ranking-row,
-.gameover-stat,
-.modal-box {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-}
-
-.howto-card,
-.settings-card {
-  padding: var(--space-4);
-}
-
-.key-row {
-  display: flex;
-  gap: var(--space-2);
-  margin-bottom: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.key-cap {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 30px;
-  height: 30px;
-  padding: 0 8px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-soft);
-  font-weight: 800;
-  font-size: 0.78rem;
-}
-
-.shop-tabs {
-  display: flex;
-  gap: var(--space-2);
-  padding: 0 var(--space-4) var(--space-3);
-}
-
-.shop-tab {
-  flex: 1;
-  padding: var(--space-2);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  font-size: 0.68rem;
-  font-weight: 700;
-}
-
-.shop-tab.active {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: #0a0014;
-  border-color: transparent;
-}
-
-.shop-panels {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0 var(--space-4) var(--space-5);
-}
-
-.shop-panel {
-  display: none;
-}
-
-.shop-panel.active {
-  display: block;
-}
-
-.shop-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
-}
-
-.shop-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  padding: var(--space-3);
-  text-align: center;
-}
-
-.shop-card-icon {
-  font-size: 2.1rem;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: var(--bg-elevated);
-}
-
-.shop-card-name {
-  font-size: 0.82rem;
-}
-
-.shop-card-desc {
-  font-size: 0.68rem;
-  color: var(--text-muted);
-  min-height: 2.4em;
-}
-
-.shop-card-buy {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 8px 10px;
-  margin-top: 4px;
-  border-radius: var(--radius-pill);
-  background: var(--accent-primary);
-  color: #0a0014;
-  font-weight: 800;
-  font-size: 0.75rem;
-}
-
-.settings-name-row {
-  display: flex;
-  gap: var(--space-2);
-}
-
-.settings-name-row input,
-.modal-box input[type="text"] {
-  flex: 1;
-  padding: 12px 14px;
-  border-radius: var(--radius-pill);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-soft);
-  color: var(--text-primary);
-}
-
-.settings-options {
-  display: flex;
-  gap: var(--space-2);
-  flex-wrap: wrap;
-}
-
-.settings-option {
-  padding: 10px 16px;
-  border-radius: var(--radius-pill);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-soft);
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-}
-
-.settings-option.active {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: #0a0014;
-  border-color: transparent;
-}
-
-.settings-slider-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-3);
-}
-
-.settings-slider-row input[type="range"] {
-  flex: 1;
-}
-
-.ranking-podium {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-3) 0;
-}
-
-.podium-slot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: var(--space-3) var(--space-2);
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  width: 90px;
-}
-
-.podium-first,
-.podium-second,
-.podium-third {
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-}
-
-.podium-first { height: 130px; }
-.podium-second { height: 104px; }
-.podium-third { height: 88px; }
-
-.ranking-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.ranking-row {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3);
-}
-
-.ranking-position {
-  width: 26px;
-  text-align: center;
-  font-weight: 900;
-}
-
-.ranking-name {
-  flex: 1;
-  font-weight: 700;
-}
-
-.ranking-level {
-  font-size: 0.68rem;
-  color: var(--accent-tertiary);
-}
-
-.ranking-score {
-  font-weight: 900;
-}
-
-.screen-game {
-  position: relative;
-  padding: 0;
-  overflow: hidden;
-}
-
-#game-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  background: var(--bg-deep);
-}
-
-.hud-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-3) 0;
-}
-
-.hud-lives {
-  display: flex;
-  gap: 4px;
-  font-size: 1.1rem;
-}
-
-.heart.lost {
-  opacity: 0.25;
-  filter: grayscale(1);
-}
-
-.hud-score-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.hud-score-label {
-  font-size: 0.6rem;
-  letter-spacing: 1.5px;
-  color: var(--text-muted);
-}
-
-.hud-score-value {
-  font-size: 1.3rem;
-  font-weight: 900;
-}
-
-.hud-pause-btn {
-  background: rgba(0, 0, 0, 0.35);
-}
-
-.hud-currency {
-  position: absolute;
-  top: 56px;
-  left: var(--space-3);
-  z-index: 20;
-  display: flex;
-  gap: 6px;
-}
-
-.hud-chip {
-  background: rgba(0, 0, 0, 0.35);
-  font-size: 0.72rem;
-  padding: 4px 10px;
-}
-
-.hud-xp-wrap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 19;
-}
-
-.hud-xp-track {
-  height: 4px;
-  border-radius: 0;
-  border: none;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.touch-swipe-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  touch-action: none;
-}
-
-.modal {
-  position: absolute;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
-}
-
-.modal-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(5, 0, 15, 0.78);
-}
-
-.modal-box {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  max-width: 360px;
-  max-height: 90%;
-  overflow-y: auto;
-  background: var(--bg-mid);
-  padding: var(--space-5);
-  text-align: center;
-}
-
-.modal-box-login input {
-  width: 100%;
-  margin: 16px 0;
-  text-align: center;
-}
-
-.gameover-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-2);
-  margin: var(--space-4) 0;
-}
-
-.gameover-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--space-3);
-}
-
-.gameover-newrecord {
-  color: var(--accent-tertiary);
-  font-weight: 800;
-  margin-bottom: var(--space-3);
-}
-
-.toast {
-  position: absolute;
-  top: 18%;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: 12px 22px;
-  border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: #0a0014;
-  font-weight: 900;
-}
-
-@media (min-width: 460px) {
-  .shop-grid {
-    grid-template-columns: repeat(3, 1fr);
+(() => {
+  "use strict";
+
+  const $ = (id) => document.getElementById(id);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+  const SAVE_KEY = "anti_runner_ultra_v2";
+
+  const DEFAULT_SAVE = {
+    player: {
+      name: "",
+      level: 1,
+      xp: 0,
+      coins: 0,
+      gems: 0,
+      avatar: "🧑‍🦱"
+    },
+    stats: {
+      bestScore: 0,
+      runs: 0
+    },
+    settings: {
+      music: 70,
+      sfx: 80,
+      theme: "arcade",
+      lang: "pt",
+      muted: false
+    },
+    ranking: []
+  };
+
+  function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
   }
-}
+
+  function loadSave() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return deepClone(DEFAULT_SAVE);
+      const parsed = JSON.parse(raw);
+      return {
+        ...deepClone(DEFAULT_SAVE),
+        ...parsed,
+        player: { ...deepClone(DEFAULT_SAVE).player, ...(parsed.player || {}) },
+        stats: { ...deepClone(DEFAULT_SAVE).stats, ...(parsed.stats || {}) },
+        settings: { ...deepClone(DEFAULT_SAVE).settings, ...(parsed.settings || {}) },
+        ranking: Array.isArray(parsed.ranking) ? parsed.ranking : []
+      };
+    } catch {
+      return deepClone(DEFAULT_SAVE);
+    }
+  }
+
+  const Game = {
+    save: loadSave(),
+    screen: "loading",
+    running: false,
+    paused: false,
+    over: false,
+    canvas: null,
+    ctx: null,
+    loopId: 0,
+    score: 0,
+    coins: 0,
+    gems: 0,
+    speed: 1,
+    lives: 3,
+    width: 0,
+    height: 0,
+    groundY: 0
+  };
+
+  function saveGame() {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(Game.save));
+  }
+
+  const LANES = [-140, 0, 140];
+
+  const Player = {
+    targetLane: 1,
+    x: 0,
+    y: 0,
+    vy: 0,
+    width: 56,
+    height: 92,
+    jumpForce: -20,
+    gravity: 1.1,
+    jumping: false,
+    sliding: false,
+    slideTimer: 0
+  };
+
+  const Obstacles = [];
+  const Coins = [];
+  const Gems = [];
+
+  const SHOP = {
+    skins: [
+      { id: "default", icon: "🧑‍🦱", name: "Classico", desc: "Visual padrao.", price: 0 },
+      { id: "guardian", icon: "🛡️", name: "Guardiao", desc: "Visual defensivo.", price: 120 },
+      { id: "runner", icon: "⚡", name: "Ultra Runner", desc: "Visual veloz.", price: 250 }
+    ],
+    powerups: [
+      { id: "shield", icon: "🛡️", name: "Escudo", desc: "Item especial.", price: 50 },
+      { id: "speed", icon: "⚡", name: "Velocidade", desc: "Item especial.", price: 70 },
+      { id: "magnet", icon: "🧲", name: "Ima", desc: "Item especial.", price: 90 }
+    ],
+    themes: [
+      { id: "arcade", icon: "🎮", name: "Arcade", desc: "Tema padrao.", price: 0 },
+      { id: "forest", icon: "🌲", name: "Floresta", desc: "Tema verde.", price: 180 },
+      { id: "ocean", icon: "🌊", name: "Oceano", desc: "Tema azul.", price: 220 },
+      { id: "sunset", icon: "🌇", name: "Por do Sol", desc: "Tema quente.", price: 300 }
+    ]
+  };
+
+  const screenIds = ["loading", "menu", "howto", "shop", "settings", "ranking", "game"];
+
+  function showScreen(name) {
+    screenIds.forEach((id) => {
+      const el = $("screen-" + id);
+      if (!el) return;
+      el.classList.add("hidden");
+      el.classList.remove("active");
+    });
+
+    const target = $("screen-" + name);
+    if (target) {
+      target.classList.remove("hidden");
+      target.classList.add("active");
+    }
+
+    Game.screen = name;
+    toggleToolbar();
+  }
+
+  function toggleToolbar() {
+    const toolbar = $("global-toolbar");
+    if (!toolbar) return;
+    if (Game.screen === "game") toolbar.classList.add("hidden");
+    else toolbar.classList.remove("hidden");
+  }
+
+  function applyTheme() {
+    document.body.dataset.theme = Game.save.settings.theme || "arcade";
+  }
+
+  function updateXPBars() {
+    const xp = Game.save.player.xp;
+    const level = Game.save.player.level;
+    const need = level * 100;
+    const pct = clamp((xp / need) * 100, 0, 100);
+
+    if ($("menu-xp-fill")) $("menu-xp-fill").style.width = pct + "%";
+    if ($("menu-xp-label")) $("menu-xp-label").textContent = `${Math.floor(xp)} / ${need} XP`;
+    if ($("hud-xp-fill")) $("hud-xp-fill").style.width = pct + "%";
+  }
+
+  function updateLives() {
+    $$(".heart").forEach((heart, i) => {
+      heart.classList.toggle("lost", i >= Game.lives);
+    });
+  }
+
+  function updateHUD() {
+    if ($("hud-score")) $("hud-score").textContent = Math.floor(Game.score);
+    if ($("hud-level")) $("hud-level").textContent = Game.save.player.level;
+    if ($("hud-coins")) $("hud-coins").textContent = Game.coins;
+    if ($("hud-gems")) $("hud-gems").textContent = Game.gems;
+    updateLives();
+    updateXPBars();
+  }
+
+  function updateMenu() {
+    if ($("menu-player-name")) $("menu-player-name").textContent = Game.save.player.name || "Jogador";
+    if ($("menu-player-level")) $("menu-player-level").textContent = `Nivel ${Game.save.player.level}`;
+    if ($("menu-player-avatar")) $("menu-player-avatar").textContent = Game.save.player.avatar || "🧑‍🦱";
+    if ($("menu-coins-amount")) $("menu-coins-amount").textContent = Game.save.player.coins;
+    if ($("menu-gems-amount")) $("menu-gems-amount").textContent = Game.save.player.gems;
+    if ($("shop-coins-amount")) $("shop-coins-amount").textContent = Game.save.player.coins;
+    if ($("shop-gems-amount")) $("shop-gems-amount").textContent = Game.save.player.gems;
+    if ($("input-player-name")) $("input-player-name").value = Game.save.player.name || "";
+    if ($("slider-music")) $("slider-music").value = Game.save.settings.music;
+    if ($("slider-sfx")) $("slider-sfx").value = Game.save.settings.sfx;
+    updateXPBars();
+    updateHUD();
+  }
+
+  function openMenu() {
+    updateMenu();
+    renderRanking();
+    renderShop();
+    showScreen("menu");
+  }
+
+  function startLoading() {
+    let pct = 0;
+    const fill = $("loading-bar-fill");
+    const text = $("loading-bar-percent");
+    const status = $("loading-status");
+    const progress = $("loading-progressbar");
+
+    const messages = [
+      "Carregando recursos...",
+      "Preparando mundo...",
+      "Organizando pistas...",
+      "Ajustando desafios...",
+      "Finalizando..."
+    ];
+
+    const timer = setInterval(() => {
+      pct += 5;
+      if (fill) fill.style.width = pct + "%";
+      if (text) text.textContent = pct + "%";
+      if (progress) progress.setAttribute("aria-valuenow", String(pct));
+      const idx = Math.min(messages.length - 1, Math.floor(pct / 20));
+      if (status) status.textContent = messages[idx];
+
+      if (pct >= 100) {
+        clearInterval(timer);
+        if (!Game.save.player.name) $("modal-login")?.classList.remove("hidden");
+        else openMenu();
+      }
+    }, 40);
+  }
+
+  function confirmLogin() {
+    const input = $("input-login-name");
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) return;
+    Game.save.player.name = name;
+    saveGame();
+    $("modal-login")?.classList.add("hidden");
+    openMenu();
+  }
+
+  function savePlayerName() {
+    const input = $("input-player-name");
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) return;
+    Game.save.player.name = name;
+    saveGame();
+    updateMenu();
+  }
+
+  function bindSettings() {
+    $("btn-save-name")?.addEventListener("click", savePlayerName);
+
+    $("slider-music")?.addEventListener("input", (e) => {
+      Game.save.settings.music = Number(e.target.value);
+      saveGame();
+    });
+
+    $("slider-sfx")?.addEventListener("input", (e) => {
+      Game.save.settings.sfx = Number(e.target.value);
+      saveGame();
+    });
+
+    $$("#theme-options .settings-option").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        $$("#theme-options .settings-option").forEach((x) => x.classList.remove("active"));
+        btn.classList.add("active");
+        Game.save.settings.theme = btn.dataset.theme;
+        applyTheme();
+        saveGame();
+      });
+    });
+
+    $$("#lang-options .settings-option").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        $$("#lang-options .settings-option").forEach((x) => x.classList.remove("active"));
+        btn.classList.add("active");
+        Game.save.settings.lang = btn.dataset.lang;
+        document.body.dataset.lang = btn.dataset.lang;
+        saveGame();
+      });
+    });
+
+    $("btn-reset-data")?.addEventListener("click", () => {
+      if (confirm("Apagar progresso?")) {
+        localStorage.removeItem(SAVE_KEY);
+        location.reload();
+      }
+    });
+  }
+
+  function initCanvas() {
+    Game.canvas = $("game-canvas");
+    if (!Game.canvas) return;
+    Game.ctx = Game.canvas.getContext("2d");
+    resizeCanvas();
+  }
+
+  function resizeCanvas() {
+    if (!Game.canvas) return;
+    const app = $("app");
+    const rect = app ? app.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+    Game.width = Math.floor(rect.width);
+    Game.height = Math.floor(rect.height);
+    Game.groundY = Game.height - 160;
+    Game.canvas.width = Game.width;
+    Game.canvas.height = Game.height;
+  }
+
+  function resetPlayer() {
+    Player.targetLane = 1;
+    Player.x = 0;
+    Player.y = 0;
+    Player.vy = 0;
+    Player.jumping = false;
+    Player.sliding = false;
+    Player.slideTimer = 0;
+  }
+
+  function resetRun() {
+    Game.score = 0;
+    Game.coins = 0;
+    Game.gems = 0;
+    Game.speed = 1;
+    Game.lives = 3;
+    Game.over = false;
+
+    Obstacles.length = 0;
+    Coins.length = 0;
+    Gems.length = 0;
+
+    resetPlayer();
+    updateHUD();
+    $("modal-gameover")?.classList.add("hidden");
+    $("modal-pause")?.classList.add("hidden");
+  }
+
+  function startGame() {
+    initCanvas();
+    resizeCanvas();
+    resetRun();
+    Game.running = true;
+    Game.paused = false;
+    showScreen("game");
+    startLoop();
+  }
+
+  function pauseGame() {
+    if (!Game.running || Game.over) return;
+    Game.paused = true;
+    $("modal-pause")?.classList.remove("hidden");
+    cancelAnimationFrame(Game.loopId);
+  }
+
+  function resumeGame() {
+    if (!Game.running || Game.over) return;
+    Game.paused = false;
+    $("modal-pause")?.classList.add("hidden");
+    startLoop();
+  }
+
+  function exitToMenu() {
+    Game.running = false;
+    Game.paused = false;
+    cancelAnimationFrame(Game.loopId);
+    $("modal-pause")?.classList.add("hidden");
+    $("modal-gameover")?.classList.add("hidden");
+    openMenu();
+  }
+
+  function moveLeft() {
+    if (!Game.running || Game.paused) return;
+    Player.targetLane = Math.max(0, Player.targetLane - 1);
+  }
+
+  function moveRight() {
+    if (!Game.running || Game.paused) return;
+    Player.targetLane = Math.min(2, Player.targetLane + 1);
+  }
+
+  function jump() {
+    if (!Game.running || Game.paused) return;
+    if (Player.jumping) return;
+    Player.jumping = true;
+    Player.vy = Player.jumpForce;
+  }
+
+  function slide() {
+    if (!Game.running || Game.paused) return;
+    if (Player.sliding) return;
+    Player.sliding = true;
+    Player.slideTimer = 28;
+  }
+
+  function updatePlayer() {
+    Player.x += (LANES[Player.targetLane] - Player.x) * 0.18;
+    Player.vy += Player.gravity;
+    Player.y += Player.vy;
+
+    if (Player.y > 0) {
+      Player.y = 0;
+      Player.vy = 0;
+      Player.jumping = false;
+    }
+
+    if (Player.slideTimer > 0) Player.slideTimer--;
+    else Player.sliding = false;
+  }
+
+  function spawnObstacle() {
+    if (Math.random() < 0.02) {
+      Obstacles.push({
+        lane: Math.floor(Math.random() * 3),
+        z: -120,
+        w: 70,
+        h: 70 + Math.random() * 70
+      });
+    }
+  }
+
+  function spawnCoin() {
+    if (Math.random() < 0.035) {
+      Coins.push({
+        lane: Math.floor(Math.random() * 3),
+        z: -40
+      });
+    }
+  }
+
+  function spawnGem() {
+    if (Math.random() < 0.006) {
+      Gems.push({
+        lane: Math.floor(Math.random() * 3),
+        z: -50
+      });
+    }
+  }
+
+  function playerScreenY() {
+    return Game.groundY - Player.height + Player.y;
+  }
+
+  function hitLane(lane) {
+    return lane === Player.targetLane;
+  }
+
+  function damage() {
+    if (Game.over) return;
+    Game.lives--;
+    updateLives();
+    if (Game.lives <= 0) gameOver();
+  }
+
+  function checkObstacleCollision(o) {
+    if (!hitLane(o.lane)) return false;
+
+    const py = playerScreenY();
+    const ph = Player.sliding ? 56 : Player.height;
+    const playerTop = py + (Player.height - ph);
+    const playerBottom = py + Player.height;
+    const obsTop = o.z;
+    const obsBottom = o.z + o.h;
+
+    if (Player.jumping && playerBottom < obsTop + 20) return false;
+
+    return obsBottom > playerTop && obsTop < playerBottom;
+  }
+
+  function checkItemCollision(item) {
+    if (!hitLane(item.lane)) return false;
+    const py = playerScreenY();
+    return item.z > py - 30 && item.z < py + 100;
+  }
+
+  function updateObstacles() {
+    for (let i = Obstacles.length - 1; i >= 0; i--) {
+      const o = Obstacles[i];
+      o.z += 10 * Game.speed;
+
+      if (checkObstacleCollision(o)) {
+        Obstacles.splice(i, 1);
+        damage();
+        continue;
+      }
+
+      if (o.z > Game.height + 120) Obstacles.splice(i, 1);
+    }
+  }
+
+  function updateCoins() {
+    for (let i = Coins.length - 1; i >= 0; i--) {
+      const c = Coins[i];
+      c.z += 10 * Game.speed;
+
+      if (checkItemCollision(c)) {
+        Coins.splice(i, 1);
+        Game.coins++;
+        Game.score += 5;
+        continue;
+      }
+
+      if (c.z > Game.height + 60) Coins.splice(i, 1);
+    }
+  }
+
+  function updateGems() {
+    for (let i = Gems.length - 1; i >= 0; i--) {
+      const g = Gems[i];
+      g.z += 10 * Game.speed;
+
+      if (checkItemCollision(g)) {
+        Gems.splice(i, 1);
+        Game.gems++;
+        Game.score += 20;
+        continue;
+      }
+
+      if (g.z > Game.height + 60) Gems.splice(i, 1);
+    }
+  }
+
+  function addXP(amount) {
+    Game.save.player.xp += amount;
+
+    while (Game.save.player.xp >= Game.save.player.level * 100) {
+      Game.save.player.xp -= Game.save.player.level * 100;
+      Game.save.player.level++;
+      showLevelUp();
+    }
+
+    saveGame();
+    updateXPBars();
+  }
+
+  function showLevelUp() {
+    const toast = $("toast-levelup");
+    const text = $("toast-levelup-text");
+    if (text) text.textContent = `Nivel ${Game.save.player.level}`;
+    if (toast) {
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 2200);
+    }
+  }
+
+  function saveRanking() {
+    Game.save.ranking.push({
+      name: Game.save.player.name || "Jogador",
+      score: Math.floor(Game.score),
+      level: Game.save.player.level
+    });
+
+    Game.save.ranking.sort((a, b) => b.score - a.score);
+    Game.save.ranking = Game.save.ranking.slice(0, 20);
+    saveGame();
+  }
+
+  function renderRanking() {
+    const list = $("ranking-list");
+    const empty = $("ranking-empty");
+    if (!list) return;
+    list.innerHTML = "";
+
+    const ranking = Game.save.ranking || [];
+
+    if (!ranking.length) empty?.classList.remove("hidden");
+    else empty?.classList.add("hidden");
+
+    ranking.forEach((p, i) => {
+      const tpl = $("template-ranking-row");
+      if (!tpl) return;
+      const row = tpl.content.firstElementChild.cloneNode(true);
+      row.querySelector(".ranking-position").textContent = i + 1;
+      row.querySelector(".ranking-name").textContent = p.name;
+      row.querySelector(".ranking-level").textContent = "Nv " + p.level;
+      row.querySelector(".ranking-score").textContent = p.score;
+      list.appendChild(row);
+    });
+
+    if ($("podium-1-name")) $("podium-1-name").textContent = ranking[0]?.name || "-";
+    if ($("podium-1-score")) $("podium-1-score").textContent = ranking[0]?.score || "0";
+    if ($("podium-2-name")) $("podium-2-name").textContent = ranking[1]?.name || "-";
+    if ($("podium-2-score")) $("podium-2-score").textContent = ranking[1]?.score || "0";
+    if ($("podium-3-name")) $("podium-3-name").textContent = ranking[2]?.name || "-";
+    if ($("podium-3-score")) $("podium-3-score").textContent = ranking[2]?.score || "0";
+  }
+
+  function renderShopCategory(type) {
+    const grid = $("shop-grid-" + type);
+    const tpl = $("template-shop-card");
+    if (!grid || !tpl) return;
+
+    grid.innerHTML = "";
+
+    SHOP[type].forEach((item) => {
+      const card = tpl.content.firstElementChild.cloneNode(true);
+      card.querySelector(".shop-card-icon").textContent = item.icon;
+      card.querySelector(".shop-card-name").textContent = item.name;
+      card.querySelector(".shop-card-desc").textContent = item.desc || "";
+      card.querySelector(".buy-icon").textContent = "🪙";
+      card.querySelector(".buy-price").textContent = item.price;
+
+      const btn = card.querySelector(".shop-card-buy");
+      btn.addEventListener("click", () => buyItem(type, item));
+
+      grid.appendChild(card);
+    });
+  }
+
+  function renderShop() {
+    renderShopCategory("skins");
+    renderShopCategory("powerups");
+    renderShopCategory("themes");
+  }
+
+  function buyItem(type, item) {
+    if (Game.save.player.coins < item.price) return;
+    Game.save.player.coins -= item.price;
+
+    if (type === "themes") {
+      Game.save.settings.theme = item.id;
+      applyTheme();
+    }
+
+    saveGame();
+    updateMenu();
+    renderShop();
+  }
+
+  function gameOver() {
+    Game.running = false;
+    Game.over = true;
+    cancelAnimationFrame(Game.loopId);
+
+    const earnedXP = Math.floor(Game.score / 20);
+
+    Game.save.player.coins += Game.coins;
+    Game.save.player.gems += Game.gems;
+    Game.save.stats.runs += 1;
+
+    if (Game.score > Game.save.stats.bestScore) {
+      Game.save.stats.bestScore = Math.floor(Game.score);
+      $("gameover-newrecord")?.classList.remove("hidden");
+    } else {
+      $("gameover-newrecord")?.classList.add("hidden");
+    }
+
+    addXP(earnedXP);
+    saveRanking();
+    saveGame();
+
+    if ($("gameover-score")) $("gameover-score").textContent = Math.floor(Game.score);
+    if ($("gameover-xp")) $("gameover-xp").textContent = earnedXP;
+    if ($("gameover-coins")) $("gameover-coins").textContent = Game.coins;
+    if ($("gameover-gems")) $("gameover-gems").textContent = Game.gems;
+
+    $("modal-gameover")?.classList.remove("hidden");
+    updateMenu();
+  }
+
+  function drawBackground() {
+    const ctx = Game.ctx;
+    const w = Game.width;
+    const h = Game.height;
+
+    ctx.fillStyle = "#0d0221";
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = "#1a0b3d";
+    ctx.fillRect(0, h - 180, w, 180);
+
+    const cx = w / 2;
+    ctx.strokeStyle = "rgba(255,255,255,0.15)";
+    ctx.lineWidth = 4;
+
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(cx + LANES[i], 0);
+      ctx.lineTo(cx + LANES[i], h - 140);
+      ctx.stroke();
+    }
+  }
+
+  function drawPlayer() {
+    const ctx = Game.ctx;
+    const cx = Game.width / 2;
+    const height = Player.sliding ? 56 : Player.height;
+    const x = cx + Player.x - Player.width / 2;
+    const y = Game.groundY - height + Player.y;
+    const r = 14;
+
+    ctx.fillStyle = "#00e5ff";
+    ctx.beginPath();
+    if (ctx.roundRect) {
+      ctx.roundRect(x, y, Player.width, height, r);
+    } else {
+      ctx.moveTo(x + r, y);
+      ctx.lineTo(x + Player.width - r, y);
+      ctx.quadraticCurveTo(x + Player.width, y, x + Player.width, y + r);
+      ctx.lineTo(x + Player.width, y + height - r);
+      ctx.quadraticCurveTo(x + Player.width, y + height, x + Player.width - r, y + height);
+      ctx.lineTo(x + r, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+    }
+    ctx.fill();
+  }
+
+  function drawObstacles() {
+    const ctx = Game.ctx;
+    const cx = Game.width / 2;
+    ctx.fillStyle = "#ff2e9a";
+
+    Obstacles.forEach((o) => {
+      ctx.fillRect(cx + LANES[o.lane] - o.w / 2, o.z, o.w, o.h);
+    });
+  }
+
+  function drawCoins() {
+    const ctx = Game.ctx;
+    const cx = Game.width / 2;
+    ctx.font = "26px sans-serif";
+
+    Coins.forEach((c) => {
+      ctx.fillText("🪙", cx + LANES[c.lane] - 13, c.z);
+    });
+  }
+
+  function drawGems() {
+    const ctx = Game.ctx;
+    const cx = Game.width / 2;
+    ctx.font = "26px sans-serif";
+
+    Gems.forEach((g) => {
+      ctx.fillText("💎", cx + LANES[g.lane] - 13, g.z);
+    });
+  }
+
+  function draw() {
+    drawBackground();
+    drawPlayer();
+    drawObstacles();
+    drawCoins();
+    drawGems();
+  }
+
+  function update() {
+    updatePlayer();
+    spawnObstacle();
+    spawnCoin();
+    spawnGem();
+    updateObstacles();
+    updateCoins();
+    updateGems();
+
+    Game.score += 0.8 * Game.speed;
+    Game.speed = Math.min(Game.speed + 0.0006, 2.6);
+
+    updateHUD();
+  }
+
+  function loop() {
+    if (!Game.running || Game.paused) return;
+    update();
+    draw();
+    Game.loopId = requestAnimationFrame(loop);
+  }
+
+  function startLoop() {
+    cancelAnimationFrame(Game.loopId);
+    Game.loopId = requestAnimationFrame(loop);
+  }
+
+  function bindKeyboard() {
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Escape" && Game.running && !Game.over) {
+        if (Game.paused) resumeGame();
+        else pauseGame();
+        return;
+      }
+
+      if (!Game.running || Game.paused) return;
+
+      switch (e.code) {
+        case "ArrowLeft":
+        case "KeyA":
+          moveLeft();
+          break;
+        case "ArrowRight":
+        case "KeyD":
+          moveRight();
+          break;
+        case "ArrowUp":
+        case "KeyW":
+        case "Space":
+          e.preventDefault();
+          jump();
+          break;
+        case "ArrowDown":
+        case "KeyS":
+          slide();
+          break;
+      }
+    });
+  }
+
+  function bindTouch() {
+    const layer = $("touch-swipe-layer");
+    if (!layer) return;
+
+    let sx = 0;
+    let sy = 0;
+
+    layer.addEventListener("touchstart", (e) => {
+      const t = e.touches[0];
+      sx = t.clientX;
+      sy = t.clientY;
+    }, { passive: true });
+
+    layer.addEventListener("touchend", (e) => {
+      if (!Game.running || Game.paused) return;
+
+      const t = e.changedTouches[0];
+      const dx = t.clientX - sx;
+      const dy = t.clientY - sy;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 40) moveRight();
+        if (dx < -40) moveLeft();
+      } else {
+        if (dy < -40) jump();
+        if (dy > 40) slide();
+      }
+    }, { passive: true });
+  }
+
+  function bindMenu() {
+    $("btn-play")?.addEventListener("click", startGame);
+    $("btn-howto")?.addEventListener("click", () => showScreen("howto"));
+    $("btn-shop")?.addEventListener("click", () => showScreen("shop"));
+    $("btn-settings")?.addEventListener("click", () => showScreen("settings"));
+    $("btn-ranking")?.addEventListener("click", () => {
+      renderRanking();
+      showScreen("ranking");
+    });
+
+    $$(".btn-back").forEach((btn) => btn.addEventListener("click", openMenu));
+
+    $("btn-login-confirm")?.addEventListener("click", confirmLogin);
+    $("btn-edit-name")?.addEventListener("click", () => showScreen("settings"));
+
+    $("btn-pause")?.addEventListener("click", pauseGame);
+    $("btn-resume")?.addEventListener("click", resumeGame);
+    $("btn-restart")?.addEventListener("click", startGame);
+    $("btn-pause-exit")?.addEventListener("click", exitToMenu);
+
+    $("btn-gameover-retry")?.addEventListener("click", startGame);
+    $("btn-gameover-menu")?.addEventListener("click", () => {
+      $("modal-gameover")?.classList.add("hidden");
+      openMenu();
+    });
+
+    $$(".shop-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        $$(".shop-tab").forEach((t) => {
+          t.classList.remove("active");
+          t.setAttribute("aria-selected", "false");
+        });
+
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+
+        $$(".shop-panel").forEach((panel) => panel.classList.remove("active"));
+        const panel = $("panel-" + tab.dataset.tab);
+        if (panel) panel.classList.add("active");
+      });
+    });
+
+    $("btn-mute")?.addEventListener("click", () => {
+      Game.save.settings.muted = !Game.save.settings.muted;
+      $("btn-mute").dataset.state = Game.save.settings.muted ? "muted" : "unmuted";
+      saveGame();
+    });
+
+    $("btn-fullscreen")?.addEventListener("click", async () => {
+      const root = document.documentElement;
+      if (!document.fullscreenElement) {
+        try {
+          await root.requestFullscreen();
+        } catch (_) {}
+      } else {
+        try {
+          await document.exitFullscreen();
+        } catch (_) {}
+      }
+    });
+  }
+
+  function boot() {
+    applyTheme();
+    document.body.dataset.lang = Game.save.settings.lang || "pt";
+
+    if ($("btn-mute")) {
+      $("btn-mute").dataset.state = Game.save.settings.muted ? "muted" : "unmuted";
+    }
+
+    bindMenu();
+    bindSettings();
+    bindKeyboard();
+    bindTouch();
+
+    window.addEventListener("resize", resizeCanvas);
+
+    updateMenu();
+    renderShop();
+    renderRanking();
+    startLoading();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+
