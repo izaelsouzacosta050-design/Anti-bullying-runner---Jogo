@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0066ff">
-<meta name="description" content="Anti-Bullying Runner V2.0 Ultra">
-<title>ANTI-BULLYING RUNNER V2.0 ULTRA</title>
+<meta name="theme-color" content="#0b69ff">
+<meta name="description" content="Runner educativo anti-bullying">
+<title>ANTI-BULLYING RUNNER</title>
 
 <link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)">
 <link rel="preconnect" href="[fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
@@ -25,32 +25,32 @@
         <div id="loadingProgress"></div>
     </div>
 
-    <p id="loadingText">Carregando...</p>
+    <p id="loadingText">Carregando ambiente...</p>
 </div>
 
 <div id="mainMenu">
     <header>
         <h1>ANTI-BULLYING RUNNER</h1>
-        <p>Corra - Decida - Faça a diferença</p>
+        <p>Corra, escolha certo e proteja quem precisa</p>
     </header>
 
     <div class="avatarArea">
-        <img id="avatarImage" src="assets/ui/default-avatar.png" alt="Avatar do jogador">
-        <input type="text" id="playerName" maxlength="18" placeholder="Nome">
+        <div id="avatarPreview" aria-label="Avatar do jogador"></div>
+        <input type="text" id="playerName" maxlength="18" placeholder="Nome do jogador">
     </div>
 
     <nav>
         <button id="playButton">JOGAR</button>
         <button id="shopButton">LOJA</button>
         <button id="heroesButton">PERSONAGENS</button>
-        <button id="skinsButton">VESTES</button>
+        <button id="skinsButton">ROUPAS</button>
         <button id="missionsButton">MISSÕES</button>
         <button id="leaderboardButton">TOP RUN</button>
         <button id="settingsButton">CONFIGURAÇÕES</button>
         <button id="creditsButton">CRÉDITOS</button>
     </nav>
 
-    <footer>Projeto Educativo</footer>
+    <footer>Projeto educativo interativo</footer>
 </div>
 
 <div id="gameContainer">
@@ -99,7 +99,7 @@
     <h2>LOJA</h2>
     <div id="shopCategories">
         <button class="shopCategory" data-category="personagens">Personagens</button>
-        <button class="shopCategory" data-category="vestes">Vestes</button>
+        <button class="shopCategory" data-category="roupas">Roupas</button>
         <button class="shopCategory" data-category="powerups">Power-ups</button>
         <button class="shopCategory" data-category="temas">Temas</button>
     </div>
@@ -108,7 +108,7 @@
 </div>
 
 <div id="heroesMenu">
-    <h2>HERÓIS</h2>
+    <h2>PERSONAGENS</h2>
     <div id="heroesGrid"></div>
     <button class="closeWindow">Fechar</button>
 </div>
@@ -159,7 +159,7 @@
     <h1>GAME OVER</h1>
     <p>Pontuação <span id="finalScore">0</span></p>
     <p>Distância <span id="finalDistance">0</span></p>
-    <p>Moedas <span id="finalCoins">0</span></p>
+    <p>Moedas da corrida <span id="finalCoins">0</span></p>
     <button id="playAgain">Jogar Novamente</button>
     <button id="backMenu">Menu</button>
 </div>
@@ -171,22 +171,13 @@
             <tr>
                 <th>#</th>
                 <th>Jogador</th>
-                <th>Recorde</th>
+                <th>Pontuação</th>
             </tr>
         </thead>
         <tbody id="leaderboardBody"></tbody>
     </table>
     <button class="closeWindow">Fechar</button>
 </div>
-
-<audio id="menuMusic" loop></audio>
-<audio id="gameMusic" loop></audio>
-<audio id="coinSound"></audio>
-<audio id="jumpSound"></audio>
-<audio id="hitSound"></audio>
-<audio id="powerSound"></audio>
-<audio id="questionSound"></audio>
-<audio id="gameOverSound"></audio>
 
 <script src="script.js"></script>
 </body>
