@@ -4,18 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0d0221">
-  <meta name="description" content="Anti-Bullying Runner v2.0 Ultra - Endless Runner educativo.">
-  <title>Anti-Bullying Runner v2.0 Ultra</title>
+  <meta name="description" content="Anti-Bullying Runner Ultra - jogo educativo endless runner com perguntas sobre empatia, respeito e seguranca.">
+  <title>Anti-Bullying Runner Ultra</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-theme="arcade" data-lang="pt">
-  <div id="global-toolbar" class="global-toolbar hidden" aria-hidden="false">
+<body data-theme="arcade">
+  <div id="global-toolbar" class="global-toolbar" aria-hidden="false">
     <button id="btn-mute" class="icon-btn" type="button" aria-label="Silenciar audio" data-state="unmuted">
       <span class="icon-on">🔊</span>
       <span class="icon-off">🔇</span>
     </button>
     <button id="btn-fullscreen" class="icon-btn" type="button" aria-label="Tela cheia">
-      <span class="icon-on">⛶</span>
+      <span>⛶</span>
     </button>
   </div>
 
@@ -30,7 +30,7 @@
             <span class="logo-line-1">ANTI-BULLYING</span>
             <span class="logo-line-2">RUNNER</span>
           </h1>
-          <span class="logo-version">v2.0 <em>ULTRA</em></span>
+          <span class="logo-version">v3.0 <em>ESCOLA SEGURA</em></span>
         </div>
 
         <div class="loading-character" aria-hidden="true">
@@ -45,14 +45,14 @@
         </div>
 
         <p class="loading-tip">
-          Dica: contar para um adulto de confianca nao e "dedurar" - e coragem.
+          Dica: pedir ajuda a um adulto de confianca e um ato de coragem.
         </p>
 
         <p class="loading-status" id="loading-status">Carregando recursos do jogo...</p>
       </div>
 
       <footer class="loading-footer">
-        <span>Um projeto educativo sobre prevencao ao bullying</span>
+        <span>Projeto educativo sobre prevencao ao bullying na escola e em outros ambientes</span>
       </footer>
     </section>
 
@@ -63,7 +63,7 @@
 
       <header class="menu-topbar">
         <button id="btn-edit-name" class="player-badge" type="button" aria-label="Editar nome do jogador">
-          <span class="player-avatar" id="menu-player-avatar">🧑‍🦱</span>
+          <span class="player-avatar" id="menu-player-avatar">🧑</span>
           <span class="player-info">
             <span class="player-name" id="menu-player-name">Jogador</span>
             <span class="player-level" id="menu-player-level">Nivel 1</span>
@@ -72,11 +72,11 @@
         </button>
 
         <div class="currency-bar">
-          <span class="currency-chip currency-coins">
+          <span class="currency-chip">
             <span class="currency-icon">🪙</span>
             <span id="menu-coins-amount">0</span>
           </span>
-          <span class="currency-chip currency-gems">
+          <span class="currency-chip">
             <span class="currency-icon">💎</span>
             <span id="menu-gems-amount">0</span>
           </span>
@@ -95,7 +95,7 @@
           <span>ANTI-BULLYING</span>
           <span class="menu-title-accent">RUNNER</span>
         </h1>
-        <p class="menu-subtitle">Corra. Desvie. Faca a diferenca.</p>
+        <p class="menu-subtitle">Corra, aprenda, proteja e faca a diferenca.</p>
       </div>
 
       <div class="menu-character-stage" aria-hidden="true">
@@ -129,7 +129,7 @@
       </nav>
 
       <footer class="menu-footer">
-        <span>v2.0 ULTRA - Movimente-se com empatia.</span>
+        <span>Aprender empatia tambem e vencer.</span>
       </footer>
     </section>
 
@@ -144,16 +144,26 @@
         <div class="howto-card">
           <h3>Movimento</h3>
           <div class="key-row">
-            <span class="key-cap">A</span><span class="key-cap">D</span>
-            <span class="key-cap">←</span><span class="key-cap">→</span>
-            <span class="key-cap">↑</span><span class="key-cap">↓</span>
+            <span class="key-cap">A</span>
+            <span class="key-cap">D</span>
+            <span class="key-cap">W</span>
+            <span class="key-cap">S</span>
+            <span class="key-cap">←</span>
+            <span class="key-cap">→</span>
+            <span class="key-cap">↑</span>
+            <span class="key-cap">↓</span>
           </div>
-          <p>Mova-se entre 3 pistas, pule e deslize para evitar obstaculos.</p>
+          <p>Mova-se entre 3 pistas, pule, deslize e desvie de trens, barreiras e pessoas no caminho.</p>
         </div>
 
         <div class="howto-card">
           <h3>No Celular</h3>
           <p>Deslize para os lados para trocar de pista, para cima para pular e para baixo para deslizar.</p>
+        </div>
+
+        <div class="howto-card">
+          <h3>Perguntas Educativas</h3>
+          <p>Durante a corrida, perguntas sobre bullying podem aparecer. Responder certo rende bonus. Responder errado tira uma vida.</p>
         </div>
       </div>
     </section>
@@ -163,11 +173,11 @@
         <button class="btn-back" type="button" aria-label="Voltar">⬅</button>
         <h2>Loja</h2>
         <div class="currency-bar">
-          <span class="currency-chip currency-coins">
+          <span class="currency-chip">
             <span class="currency-icon">🪙</span>
             <span id="shop-coins-amount">0</span>
           </span>
-          <span class="currency-chip currency-gems">
+          <span class="currency-chip">
             <span class="currency-icon">💎</span>
             <span id="shop-gems-amount">0</span>
           </span>
@@ -176,13 +186,16 @@
 
       <nav class="shop-tabs" role="tablist" aria-label="Categorias da loja">
         <button class="shop-tab active" data-tab="skins" type="button" role="tab" aria-selected="true">
-          <span class="tab-icon">🧥</span><span>Vestes</span>
+          <span class="tab-icon">🧥</span>
+          <span>Personagem</span>
         </button>
         <button class="shop-tab" data-tab="powerups" type="button" role="tab" aria-selected="false">
-          <span class="tab-icon">🧪</span><span>Power-ups</span>
+          <span class="tab-icon">🧪</span>
+          <span>Power-ups</span>
         </button>
         <button class="shop-tab" data-tab="themes" type="button" role="tab" aria-selected="false">
-          <span class="tab-icon">🎨</span><span>Temas</span>
+          <span class="tab-icon">🎨</span>
+          <span>Temas</span>
         </button>
       </nav>
 
@@ -228,19 +241,12 @@
         </div>
 
         <div class="settings-card">
-          <h3>Idioma</h3>
-          <div class="settings-options" id="lang-options">
-            <button class="settings-option active" data-lang="pt" type="button">Português</button>
-          </div>
-        </div>
-
-        <div class="settings-card">
           <h3>Tema Visual</h3>
           <div class="settings-options settings-options-themes" id="theme-options">
-            <button class="settings-option theme-swatch theme-swatch-arcade active" data-theme="arcade" type="button">Arcade</button>
-            <button class="settings-option theme-swatch theme-swatch-forest" data-theme="forest" type="button">Floresta</button>
-            <button class="settings-option theme-swatch theme-swatch-ocean" data-theme="ocean" type="button">Oceano</button>
-            <button class="settings-option theme-swatch theme-swatch-sunset" data-theme="sunset" type="button">Por do Sol</button>
+            <button class="settings-option active" data-theme="arcade" type="button">Arcade</button>
+            <button class="settings-option" data-theme="forest" type="button">Floresta</button>
+            <button class="settings-option" data-theme="ocean" type="button">Oceano</button>
+            <button class="settings-option" data-theme="sunset" type="button">Por do Sol</button>
           </div>
         </div>
 
@@ -293,7 +299,7 @@
         <ol class="ranking-list" id="ranking-list"></ol>
 
         <p class="ranking-empty hidden" id="ranking-empty">
-          Ninguem correu ainda. Seja o primeiro do Top Run!
+          Ninguem correu ainda. Seja o primeiro no Top Run.
         </p>
       </div>
 
@@ -327,13 +333,16 @@
 
       <div class="hud-currency">
         <span class="hud-chip">
-          <span class="hud-chip-icon">🪙</span><span id="hud-coins">0</span>
+          <span class="hud-chip-icon">🪙</span>
+          <span id="hud-coins">0</span>
         </span>
         <span class="hud-chip">
-          <span class="hud-chip-icon">💎</span><span id="hud-gems">0</span>
+          <span class="hud-chip-icon">💎</span>
+          <span id="hud-gems">0</span>
         </span>
         <span class="hud-chip hud-chip-level">
-          <span class="hud-chip-icon">⭐</span><span id="hud-level">1</span>
+          <span class="hud-chip-icon">⭐</span>
+          <span id="hud-level">1</span>
         </span>
       </div>
 
@@ -349,7 +358,7 @@
     <div id="modal-login" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="login-title">
       <div class="modal-backdrop"></div>
       <div class="modal-box modal-box-login">
-        <h2 id="login-title">Bem-vindo(a)!</h2>
+        <h2 id="login-title">Bem-vindo(a)</h2>
         <p>Como podemos te chamar nesta corrida?</p>
         <input type="text" id="input-login-name" maxlength="16" placeholder="Seu nome" aria-label="Seu nome">
         <button id="btn-login-confirm" class="menu-btn menu-btn-primary" type="button">Comecar</button>
@@ -361,13 +370,16 @@
       <div class="modal-box modal-box-pause">
         <h2 id="pause-title">Pausado</h2>
         <button id="btn-resume" class="menu-btn menu-btn-primary" type="button">
-          <span class="menu-btn-icon">▶️</span><span>Continuar</span>
+          <span class="menu-btn-icon">▶️</span>
+          <span>Continuar</span>
         </button>
         <button id="btn-restart" class="menu-btn" type="button">
-          <span class="menu-btn-icon">🔄</span><span>Reiniciar</span>
+          <span class="menu-btn-icon">🔄</span>
+          <span>Reiniciar</span>
         </button>
         <button id="btn-pause-exit" class="menu-btn menu-btn-ghost" type="button">
-          <span class="menu-btn-icon">🚪</span><span>Sair para o Menu</span>
+          <span class="menu-btn-icon">🚪</span>
+          <span>Sair para o Menu</span>
         </button>
       </div>
     </div>
@@ -403,17 +415,33 @@
         <p class="gameover-newrecord hidden" id="gameover-newrecord">Novo Recorde Pessoal!</p>
 
         <button id="btn-gameover-retry" class="menu-btn menu-btn-primary" type="button">
-          <span class="menu-btn-icon">🔄</span><span>Correr de Novo</span>
+          <span class="menu-btn-icon">🔄</span>
+          <span>Correr de Novo</span>
         </button>
         <button id="btn-gameover-menu" class="menu-btn menu-btn-ghost" type="button">
-          <span class="menu-btn-icon">🏠</span><span>Voltar ao Menu</span>
+          <span class="menu-btn-icon">🏠</span>
+          <span>Voltar ao Menu</span>
         </button>
+      </div>
+    </div>
+
+    <div id="modal-quiz" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-box modal-box-quiz">
+        <h2 id="quiz-title">Pergunta Rapida</h2>
+        <p id="quiz-question" class="quiz-question">Pergunta</p>
+        <div id="quiz-options" class="quiz-options"></div>
+        <p id="quiz-feedback" class="quiz-feedback"></p>
       </div>
     </div>
 
     <div id="toast-levelup" class="toast toast-levelup hidden" aria-live="polite">
       <span class="toast-levelup-icon">⭐</span>
       <span class="toast-levelup-text" id="toast-levelup-text">Nivel Alcancado!</span>
+    </div>
+
+    <div id="toast-message" class="toast toast-message hidden" aria-live="polite">
+      <span id="toast-message-text">Mensagem</span>
     </div>
   </div>
 
