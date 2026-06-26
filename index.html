@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0d0221">
+  <meta name="description" content="Anti-Bullying Runner Ultra - jogo educativo endless runner com perguntas sobre empatia, respeito e seguranca.">
+  <title>Anti-Bullying Runner Ultra</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="arcade">
+  <div id="global-toolbar" class="global-toolbar" aria-hidden="false">
+    <button id="btn-mute" class="icon-btn" type="button" aria-label="Silenciar audio" data-state="unmuted">
+      <span class="icon-on">🔊</span>
+      <span class="icon-off">🔇</span>
+    </button>
+    <button id="btn-fullscreen" class="icon-btn" type="button" aria-label="Tela cheia">
+      <span>⛶</span>
+    </button>
+  </div>
+
+  <div id="app" class="app-root">
+    <section id="screen-loading" class="screen screen-loading active" aria-live="polite">
+      <div class="loading-bg-layer layer-stars"></div>
+      <div class="loading-bg-layer layer-tracks"></div>
+
+      <div class="loading-content">
+        <div class="logo-wrap">
+          <h1 class="game-logo">
+            <span class="logo-line-1">ANTI-BULLYING</span>
+            <span class="logo-line-2">RUNNER</span>
+          </h1>
+          <span class="logo-version">v3.1 <em>ESCOLA SEGURA</em></span>
+        </div>
+
+        <div class="loading-character" aria-hidden="true">
+          <div class="sprite sprite-run">
+            <div class="sprite-knight"></div>
+          </div>
+        </div>
+
+        <div class="loading-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="loading-progressbar">
+          <div class="loading-bar-fill" id="loading-bar-fill"></div>
+          <span class="loading-bar-percent" id="loading-bar-percent">0%</span>
+        </div>
+
+        <p class="loading-tip">
+          Dica: pedir ajuda a um adulto de confianca e um ato de coragem.
+        </p>
+
+        <p class="loading-status" id="loading-status">Carregando recursos do jogo...</p>
+      </div>
+
+      <footer class="loading-footer">
+        <span>Projeto educativo sobre prevencao ao bullying na escola e em outros ambientes</span>
+      </footer>
+    </section>
+
+    <section id="screen-menu" class="screen screen-menu hidden">
+      <div class="menu-bg-layer layer-parallax-far"></div>
+      <div class="menu-bg-layer layer-parallax-near"></div>
+      <div class="menu-bg-layer layer-vignette"></div>
+
+      <header class="menu-topbar">
+        <button id="btn-edit-name" class="player-badge" type="button" aria-label="Editar nome do jogador">
+          <span class="player-avatar" id="menu-player-avatar">🧑</span>
+          <span class="player-info">
+            <span class="player-name" id="menu-player-name">Jogador</span>
+            <span class="player-level" id="menu-player-level">Nivel 1</span>
+          </span>
+          <span class="edit-pencil" aria-hidden="true">✏️</span>
+        </button>
+
+        <div class="currency-bar">
+          <span class="currency-chip">
+            <span class="currency-icon">🪙</span>
+            <span id="menu-coins-amount">0</span>
+          </span>
+          <span class="currency-chip">
+            <span class="currency-icon">💎</span>
+            <span id="menu-gems-amount">0</span>
+          </span>
+        </div>
+      </header>
+
+      <div class="menu-xp-wrap">
+        <div class="xp-bar-track">
+          <div class="xp-bar-fill" id="menu-xp-fill" style="width:0%"></div>
+        </div>
+        <span class="xp-bar-label" id="menu-xp-label">0 / 100 XP</span>
+      </div>
+
+      <div class="menu-hero">
+        <h1 class="menu-title">
+          <span>ANTI-BULLYING</span>
+          <span class="menu-title-accent">RUNNER</span>
+        </h1>
+        <p class="menu-subtitle">Corra, aprenda, proteja e faca a diferenca.</p>
+      </div>
+
+      <div class="menu-character-stage" aria-hidden="true">
+        <div class="sprite sprite-idle">
+          <div class="sprite-knight"></div>
+        </div>
+        <div class="menu-stage-ground"></div>
+      </div>
+
+      <nav class="menu-actions" aria-label="Menu principal">
+        <button id="btn-play" class="menu-btn menu-btn-primary" type="button">
+          <span class="menu-btn-icon">▶️</span>
+          <span>JOGAR</span>
+        </button>
+        <button id="btn-shop" class="menu-btn" type="button">
+          <span class="menu-btn-icon">🛒</span>
+          <span>LOJA</span>
+        </button>
+        <button id="btn-ranking" class="menu-btn" type="button">
+          <span class="menu-btn-icon">🏆</span>
+          <span>TOP RUN</span>
+        </button>
+        <button id="btn-settings" class="menu-btn" type="button">
+          <span class="menu-btn-icon">⚙️</span>
+          <span>CONFIGURACOES</span>
+        </button>
+        <button id="btn-howto" class="menu-btn menu-btn-ghost" type="button">
+          <span class="menu-btn-icon">❓</span>
+          <span>COMO JOGAR</span>
+        </button>
+      </nav>
+
+      <footer class="menu-footer">
+        <span>Aprender empatia tambem e vencer.</span>
+      </footer>
+    </section>
+
+    <section id="screen-howto" class="screen screen-howto hidden">
+      <header class="subscreen-header">
+        <button class="btn-back" type="button" aria-label="Voltar">⬅</button>
+        <h2>Como Jogar</h2>
+        <span class="header-spacer"></span>
+      </header>
+
+      <div class="howto-content">
+        <div class="howto-card">
+          <h3>Movimento</h3>
+          <div class="key-row">
+            <span class="key-cap">A</span>
+            <span class="key-cap">D</span>
+            <span class="key-cap">W</span>
+            <span class="key-cap">S</span>
+            <span class="key-cap">←</span>
+            <span class="key-cap">→</span>
+            <span class="key-cap">↑</span>
+            <span class="key-cap">↓</span>
+          </div>
+          <p>Mova-se entre 3 pistas, pule, deslize e desvie de trens, barreiras e pessoas no caminho.</p>
+        </div>
+
+        <div class="howto-card">
+          <h3>No Celular</h3>
+          <p>Deslize para os lados para trocar de pista, para cima para pular e para baixo para deslizar.</p>
+        </div>
+
+        <div class="howto-card">
+          <h3>Perguntas Educativas</h3>
+          <p>Ao tocar em trens ou barreiras, aparece uma pergunta. Se acertar, ganha bonus. Se errar, perde uma vida e continua.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-shop" class="screen screen-shop hidden">
+      <header class="subscreen-header">
+        <button class="btn-back" type="button" aria-label="Voltar">⬅</button>
+        <h2>Loja</h2>
+        <div class="currency-bar">
+          <span class="currency-chip">
+            <span class="currency-icon">🪙</span>
+            <span id="shop-coins-amount">0</span>
+          </span>
+          <span class="currency-chip">
+            <span class="currency-icon">💎</span>
+            <span id="shop-gems-amount">0</span>
+          </span>
+        </div>
+      </header>
+
+      <nav class="shop-tabs" role="tablist" aria-label="Categorias da loja">
+        <button class="shop-tab active" data-tab="skins" type="button" role="tab" aria-selected="true">
+          <span class="tab-icon">🧥</span>
+          <span>Personagem</span>
+        </button>
+        <button class="shop-tab" data-tab="powerups" type="button" role="tab" aria-selected="false">
+          <span class="tab-icon">🧪</span>
+          <span>Power-ups</span>
+        </button>
+        <button class="shop-tab" data-tab="themes" type="button" role="tab" aria-selected="false">
+          <span class="tab-icon">🎨</span>
+          <span>Temas</span>
+        </button>
+      </nav>
+
+      <div class="shop-panels">
+        <div class="shop-panel active" id="panel-skins" role="tabpanel">
+          <div class="shop-grid" id="shop-grid-skins"></div>
+        </div>
+        <div class="shop-panel" id="panel-powerups" role="tabpanel">
+          <div class="shop-grid" id="shop-grid-powerups"></div>
+        </div>
+        <div class="shop-panel" id="panel-themes" role="tabpanel">
+          <div class="shop-grid" id="shop-grid-themes"></div>
+        </div>
+      </div>
+
+      <template id="template-shop-card">
+        <article class="shop-card">
+          <div class="shop-card-icon"></div>
+          <h3 class="shop-card-name"></h3>
+          <p class="shop-card-desc"></p>
+          <button class="shop-card-buy" type="button">
+            <span class="buy-icon"></span>
+            <span class="buy-price"></span>
+          </button>
+        </article>
+      </template>
+    </section>
+
+    <section id="screen-settings" class="screen screen-settings hidden">
+      <header class="subscreen-header">
+        <button class="btn-back" type="button" aria-label="Voltar">⬅</button>
+        <h2>Configuracoes</h2>
+        <span class="header-spacer"></span>
+      </header>
+
+      <div class="settings-content">
+        <div class="settings-card">
+          <h3>Nome do Jogador</h3>
+          <div class="settings-name-row">
+            <input type="text" id="input-player-name" maxlength="16" placeholder="Digite seu nome" aria-label="Nome do jogador">
+            <button id="btn-save-name" class="btn-small" type="button">Salvar</button>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>Tema Visual</h3>
+          <div class="settings-options settings-options-themes" id="theme-options">
+            <button class="settings-option active" data-theme="arcade" type="button">Arcade</button>
+            <button class="settings-option" data-theme="forest" type="button">Floresta</button>
+            <button class="settings-option" data-theme="ocean" type="button">Oceano</button>
+            <button class="settings-option" data-theme="sunset" type="button">Por do Sol</button>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h3>Audio</h3>
+          <div class="settings-slider-row">
+            <label for="slider-music">Musica</label>
+            <input type="range" id="slider-music" min="0" max="100" value="70">
+          </div>
+          <div class="settings-slider-row">
+            <label for="slider-sfx">Efeitos Sonoros</label>
+            <input type="range" id="slider-sfx" min="0" max="100" value="80">
+          </div>
+        </div>
+
+        <div class="settings-card settings-card-danger">
+          <h3>Dados</h3>
+          <p>Apagar todo o progresso salvo neste dispositivo.</p>
+          <button id="btn-reset-data" class="btn-small btn-danger" type="button">Apagar Progresso</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="screen-ranking" class="screen screen-ranking hidden">
+      <header class="subscreen-header">
+        <button class="btn-back" type="button" aria-label="Voltar">⬅</button>
+        <h2>Top Run</h2>
+        <span class="header-spacer"></span>
+      </header>
+
+      <div class="ranking-content">
+        <div class="ranking-podium" aria-hidden="true">
+          <div class="podium-slot podium-second">
+            <span class="podium-medal">🥈</span>
+            <span class="podium-name" id="podium-2-name">-</span>
+            <span class="podium-score" id="podium-2-score">0</span>
+          </div>
+          <div class="podium-slot podium-first">
+            <span class="podium-medal">🥇</span>
+            <span class="podium-name" id="podium-1-name">-</span>
+            <span class="podium-score" id="podium-1-score">0</span>
+          </div>
+          <div class="podium-slot podium-third">
+            <span class="podium-medal">🥉</span>
+            <span class="podium-name" id="podium-3-name">-</span>
+            <span class="podium-score" id="podium-3-score">0</span>
+          </div>
+        </div>
+
+        <ol class="ranking-list" id="ranking-list"></ol>
+
+        <p class="ranking-empty hidden" id="ranking-empty">
+          Ninguem correu ainda. Seja o primeiro no Top Run.
+        </p>
+      </div>
+
+      <template id="template-ranking-row">
+        <li class="ranking-row">
+          <span class="ranking-position"></span>
+          <span class="ranking-name"></span>
+          <span class="ranking-level"></span>
+          <span class="ranking-score"></span>
+        </li>
+      </template>
+    </section>
+
+    <section id="screen-game" class="screen screen-game hidden">
+      <canvas id="game-canvas" aria-label="Area de jogo"></canvas>
+
+      <div class="hud-top">
+        <div class="hud-lives" id="hud-lives" aria-label="Vidas restantes">
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+          <span class="heart">❤️</span>
+        </div>
+
+        <div class="hud-score-block">
+          <span class="hud-score-label">PONTOS</span>
+          <span class="hud-score-value" id="hud-score">0</span>
+        </div>
+
+        <button id="btn-pause" class="icon-btn hud-pause-btn" type="button" aria-label="Pausar">⏸️</button>
+      </div>
+
+      <div class="hud-currency">
+        <span class="hud-chip">
+          <span class="hud-chip-icon">🪙</span>
+          <span id="hud-coins">0</span>
+        </span>
+        <span class="hud-chip">
+          <span class="hud-chip-icon">💎</span>
+          <span id="hud-gems">0</span>
+        </span>
+        <span class="hud-chip hud-chip-level">
+          <span class="hud-chip-icon">⭐</span>
+          <span id="hud-level">1</span>
+        </span>
+      </div>
+
+      <div class="hud-xp-wrap">
+        <div class="xp-bar-track hud-xp-track">
+          <div class="xp-bar-fill" id="hud-xp-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="touch-swipe-layer" id="touch-swipe-layer" aria-hidden="true"></div>
+    </section>
+
+    <div id="modal-login" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-box modal-box-login">
+        <h2 id="login-title">Bem-vindo(a)</h2>
+        <p>Como podemos te chamar nesta corrida?</p>
+        <input type="text" id="input-login-name" maxlength="16" placeholder="Seu nome" aria-label="Seu nome">
+        <button id="btn-login-confirm" class="menu-btn menu-btn-primary" type="button">Comecar</button>
+      </div>
+    </div>
+
+    <div id="modal-pause" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-box modal-box-pause">
+        <h2 id="pause-title">Pausado</h2>
+        <button id="btn-resume" class="menu-btn menu-btn-primary" type="button">
+          <span class="menu-btn-icon">▶️</span>
+          <span>Continuar</span>
+        </button>
+        <button id="btn-restart" class="menu-btn" type="button">
+          <span class="menu-btn-icon">🔄</span>
+          <span>Reiniciar</span>
+        </button>
+        <button id="btn-pause-exit" class="menu-btn menu-btn-ghost" type="button">
+          <span class="menu-btn-icon">🚪</span>
+          <span>Sair para o Menu</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="modal-gameover" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="gameover-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-box modal-box-gameover">
+        <h2 id="gameover-title">Fim de Jogo</h2>
+
+        <div class="gameover-stats">
+          <div class="gameover-stat">
+            <span class="gameover-stat-icon">🏁</span>
+            <span class="gameover-stat-label">Pontuacao</span>
+            <span class="gameover-stat-value" id="gameover-score">0</span>
+          </div>
+          <div class="gameover-stat">
+            <span class="gameover-stat-icon">⭐</span>
+            <span class="gameover-stat-label">XP Ganho</span>
+            <span class="gameover-stat-value" id="gameover-xp">0</span>
+          </div>
+          <div class="gameover-stat">
+            <span class="gameover-stat-icon">🪙</span>
+            <span class="gameover-stat-label">Moedas</span>
+            <span class="gameover-stat-value" id="gameover-coins">0</span>
+          </div>
+          <div class="gameover-stat">
+            <span class="gameover-stat-icon">💎</span>
+            <span class="gameover-stat-label">Gemas</span>
+            <span class="gameover-stat-value" id="gameover-gems">0</span>
+          </div>
+        </div>
+
+        <p class="gameover-newrecord hidden" id="gameover-newrecord">Novo Recorde Pessoal!</p>
+
+        <button id="btn-gameover-retry" class="menu-btn menu-btn-primary" type="button">
+          <span class="menu-btn-icon">🔄</span>
+          <span>Correr de Novo</span>
+        </button>
+        <button id="btn-gameover-menu" class="menu-btn menu-btn-ghost" type="button">
+          <span class="menu-btn-icon">🏠</span>
+          <span>Voltar ao Menu</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="modal-quiz" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="quiz-title">
+      <div class="modal-backdrop"></div>
+      <div class="modal-box modal-box-quiz">
+        <h2 id="quiz-title">Pergunta Rapida</h2>
+        <p id="quiz-question" class="quiz-question">Pergunta</p>
+        <div id="quiz-options" class="quiz-options"></div>
+        <p id="quiz-feedback" class="quiz-feedback"></p>
+      </div>
+    </div>
+
+    <div id="toast-levelup" class="toast toast-levelup hidden" aria-live="polite">
+      <span class="toast-levelup-icon">⭐</span>
+      <span class="toast-levelup-text" id="toast-levelup-text">Nivel Alcancado!</span>
+    </div>
+
+    <div id="toast-message" class="toast toast-message hidden" aria-live="polite">
+      <span id="toast-message-text">Mensagem</span>
+    </div>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
