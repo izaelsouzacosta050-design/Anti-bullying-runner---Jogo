@@ -4,8 +4,9 @@
   const $ = (id) => document.getElementById(id);
   const $$ = (selector) => [...document.querySelectorAll(selector)];
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const deepClone = (obj) => JSON.parse(JSON.stringify(obj));
 
-  const SAVE_KEY = "anti_runner_ultra_v2";
+  const SAVE_KEY = "anti_runner_ultra_v3";
 
   const DEFAULT_SAVE = {
     player: {
@@ -14,7 +15,7 @@
       xp: 0,
       coins: 0,
       gems: 0,
-      avatar: "🧑‍🦱"
+      avatar: "🧑"
     },
     stats: {
       bestScore: 0,
@@ -24,27 +25,42 @@
       music: 70,
       sfx: 80,
       theme: "arcade",
-      lang: "pt",
       muted: false
+    },
+    unlocks: {
+      skins: ["default"],
+      themes: ["arcade"],
+      powerups: []
+    },
+    equipped: {
+      skin: "default",
+      shield: false,
+      magnet: false,
+      speed: false
     },
     ranking: []
   };
-
-  function deepClone(obj) {
-    return JSON.parse(JSON.stringify(obj));
-  }
 
   function loadSave() {
     try {
       const raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return deepClone(DEFAULT_SAVE);
       const parsed = JSON.parse(raw);
+
       return {
         ...deepClone(DEFAULT_SAVE),
         ...parsed,
         player: { ...deepClone(DEFAULT_SAVE).player, ...(parsed.player || {}) },
         stats: { ...deepClone(DEFAULT_SAVE).stats, ...(parsed.stats || {}) },
         settings: { ...deepClone(DEFAULT_SAVE).settings, ...(parsed.settings || {}) },
+        unlocks: {
+          ...deepClone(DEFAULT_SAVE).unlocks,
+          ...(parsed.unlocks || {}),
+          skins: Array.isArray(parsed.unlocks?.skins) ? parsed.unlocks.skins : ["default"],
+          themes: Array.isArray(parsed.unlocks?.themes) ? parsed.unlocks.themes : ["arcade"],
+          powerups: Array.isArray(parsed.unlocks?.powerups) ? parsed.unlocks.powerups : []
+        },
+        equipped: { ...deepClone(DEFAULT_SAVE).equipped, ...(parsed.equipped || {}) },
         ranking: Array.isArray(parsed.ranking) ? parsed.ranking : []
       };
     } catch {
@@ -58,6 +74,7 @@
     running: false,
     paused: false,
     over: false,
+    questionActive: false,
     canvas: null,
     ctx: null,
     loopId: 0,
@@ -68,7 +85,11 @@
     lives: 3,
     width: 0,
     height: 0,
-    groundY: 0
+    groundY: 0,
+    elapsed: 0,
+    lastTime: 0,
+    questionTimer: 0,
+    invulnerableTimer: 0
   };
 
   function saveGame() {
@@ -85,10 +106,11 @@
     width: 56,
     height: 92,
     jumpForce: -20,
-    gravity: 1.1,
+    gravity: 1.08,
     jumping: false,
     sliding: false,
-    slideTimer: 0
+    slideTimer: 0,
+    color: "#00e5ff"
   };
 
   const Obstacles = [];
@@ -97,24 +119,99 @@
 
   const SHOP = {
     skins: [
-      { id: "default", icon: "🧑‍🦱", name: "Classico", desc: "Visual padrao.", price: 0 },
-      { id: "guardian", icon: "🛡️", name: "Guardiao", desc: "Visual defensivo.", price: 120 },
-      { id: "runner", icon: "⚡", name: "Ultra Runner", desc: "Visual veloz.", price: 250 }
+      { id: "default", icon: "🧑", name: "Classico", desc: "Visual padrao do corredor.", price: 0 },
+      { id: "guardian", icon: "🛡️", name: "Guardiao", desc: "Visual protetor e firme.", price: 120 },
+      { id: "runner", icon: "⚡", name: "Ultra Runner", desc: "Visual veloz e brilhante.", price: 250 }
     ],
     powerups: [
-      { id: "shield", icon: "🛡️", name: "Escudo", desc: "Item especial.", price: 50 },
-      { id: "speed", icon: "⚡", name: "Velocidade", desc: "Item especial.", price: 70 },
-      { id: "magnet", icon: "🧲", name: "Ima", desc: "Item especial.", price: 90 }
+      { id: "shield", icon: "🛡️", name: "Escudo", desc: "Evita um dano por partida.", price: 80 },
+      { id: "speed", icon: "⚡", name: "Arranque", desc: "Comeca a corrida um pouco mais rapido.", price: 100 },
+      { id: "magnet", icon: "🧲", name: "Ima", desc: "Atrai moedas proximas automaticamente.", price: 110 }
     ],
     themes: [
       { id: "arcade", icon: "🎮", name: "Arcade", desc: "Tema padrao.", price: 0 },
-      { id: "forest", icon: "🌲", name: "Floresta", desc: "Tema verde.", price: 180 },
-      { id: "ocean", icon: "🌊", name: "Oceano", desc: "Tema azul.", price: 220 },
-      { id: "sunset", icon: "🌇", name: "Por do Sol", desc: "Tema quente.", price: 300 }
+      { id: "forest", icon: "🌲", name: "Floresta", desc: "Tema verde e calmo.", price: 180 },
+      { id: "ocean", icon: "🌊", name: "Oceano", desc: "Tema azul e fluido.", price: 220 },
+      { id: "sunset", icon: "🌇", name: "Por do Sol", desc: "Tema quente e vibrante.", price: 300 }
     ]
   };
 
+  const QUIZ = [
+    {
+      question: "Se voce ver alguem sofrendo bullying na escola, qual atitude e melhor?",
+      options: [
+        "Ignorar para nao se envolver",
+        "Ajudar com respeito e procurar um adulto de confianca",
+        "Filmar e postar na internet"
+      ],
+      correct: 1,
+      explanation: "A atitude correta e apoiar a pessoa e buscar ajuda responsavel."
+    },
+    {
+      question: "Bullying acontece apenas na escola?",
+      options: [
+        "Nao, pode acontecer em varios lugares, inclusive online",
+        "Sim, so acontece em sala de aula",
+        "So acontece entre desconhecidos"
+      ],
+      correct: 0,
+      explanation: "Bullying pode acontecer na escola, na rua, em grupos, no esporte e na internet."
+    },
+    {
+      question: "Chamar alguem por apelidos humilhantes e brincadeira sempre?",
+      options: [
+        "Sim, se todo mundo rir",
+        "Nao, pode machucar e ser bullying",
+        "Sim, se for so uma vez"
+      ],
+      correct: 1,
+      explanation: "Se machuca, humilha ou exclui, nao e brincadeira saudavel."
+    },
+    {
+      question: "O que fazer se voce estiver sofrendo bullying?",
+      options: [
+        "Guardar tudo sozinho",
+        "Responder com mais agressao",
+        "Contar a um adulto de confianca e buscar apoio"
+      ],
+      correct: 2,
+      explanation: "Buscar ajuda e a melhor forma de se proteger."
+    },
+    {
+      question: "Espalhar boatos sobre alguem e um tipo de bullying?",
+      options: [
+        "Sim",
+        "Nao",
+        "So se for na internet"
+      ],
+      correct: 0,
+      explanation: "Boatos e humilhacoes repetidas podem ser bullying."
+    },
+    {
+      question: "Excluir alguem de proposito do grupo para machucar e:",
+      options: [
+        "Algo normal",
+        "Uma forma de bullying",
+        "Uma piada sem importancia"
+      ],
+      correct: 1,
+      explanation: "Exclusao intencional tambem pode ser bullying."
+    }
+  ];
+
   const screenIds = ["loading", "menu", "howto", "shop", "settings", "ranking", "game"];
+
+  function showToast(message) {
+    const toast = $("toast-message");
+    const text = $("toast-message-text");
+    if (!toast || !text) return;
+    text.textContent = message;
+    toast.classList.remove("hidden");
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(() => {
+      toast.classList.add("hidden");
+    }, 1800);
+  }
 
   function showScreen(name) {
     screenIds.forEach((id) => {
@@ -143,6 +240,13 @@
 
   function applyTheme() {
     document.body.dataset.theme = Game.save.settings.theme || "arcade";
+    syncThemeButtons();
+  }
+
+  function syncThemeButtons() {
+    $$("#theme-options .settings-option").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.theme === Game.save.settings.theme);
+    });
   }
 
   function updateXPBars() {
@@ -171,19 +275,25 @@
     updateXPBars();
   }
 
+  function getEquippedSkin() {
+    return SHOP.skins.find((s) => s.id === Game.save.equipped.skin) || SHOP.skins[0];
+  }
+
   function updateMenu() {
+    const skin = getEquippedSkin();
     if ($("menu-player-name")) $("menu-player-name").textContent = Game.save.player.name || "Jogador";
     if ($("menu-player-level")) $("menu-player-level").textContent = `Nivel ${Game.save.player.level}`;
-    if ($("menu-player-avatar")) $("menu-player-avatar").textContent = Game.save.player.avatar || "🧑‍🦱";
-    if ($("menu-coins-amount")) $("menu-coins-amount").textContent = Game.save.player.coins;
-    if ($("menu-gems-amount")) $("menu-gems-amount").textContent = Game.save.player.gems;
+    if ($("menu-player-avatar")) $("menu-player-avatar").textContent = skin.icon || "🧑";
     if ($("shop-coins-amount")) $("shop-coins-amount").textContent = Game.save.player.coins;
     if ($("shop-gems-amount")) $("shop-gems-amount").textContent = Game.save.player.gems;
+    if ($("menu-coins-amount")) $("menu-coins-amount").textContent = Game.save.player.coins;
+    if ($("menu-gems-amount")) $("menu-gems-amount").textContent = Game.save.player.gems;
     if ($("input-player-name")) $("input-player-name").value = Game.save.player.name || "";
     if ($("slider-music")) $("slider-music").value = Game.save.settings.music;
     if ($("slider-sfx")) $("slider-sfx").value = Game.save.settings.sfx;
     updateXPBars();
     updateHUD();
+    syncThemeButtons();
   }
 
   function openMenu() {
@@ -202,9 +312,9 @@
 
     const messages = [
       "Carregando recursos...",
-      "Preparando mundo...",
-      "Organizando pistas...",
-      "Ajustando desafios...",
+      "Preparando pistas...",
+      "Criando desafios...",
+      "Organizando perguntas educativas...",
       "Finalizando..."
     ];
 
@@ -221,14 +331,17 @@
         if (!Game.save.player.name) $("modal-login")?.classList.remove("hidden");
         else openMenu();
       }
-    }, 40);
+    }, 35);
   }
 
   function confirmLogin() {
     const input = $("input-login-name");
     if (!input) return;
     const name = input.value.trim();
-    if (!name) return;
+    if (!name) {
+      showToast("Digite um nome.");
+      return;
+    }
     Game.save.player.name = name;
     saveGame();
     $("modal-login")?.classList.add("hidden");
@@ -239,10 +352,14 @@
     const input = $("input-player-name");
     if (!input) return;
     const name = input.value.trim();
-    if (!name) return;
+    if (!name) {
+      showToast("Digite um nome valido.");
+      return;
+    }
     Game.save.player.name = name;
     saveGame();
     updateMenu();
+    showToast("Nome salvo.");
   }
 
   function bindSettings() {
@@ -260,26 +377,22 @@
 
     $$("#theme-options .settings-option").forEach((btn) => {
       btn.addEventListener("click", () => {
-        $$("#theme-options .settings-option").forEach((x) => x.classList.remove("active"));
-        btn.classList.add("active");
-        Game.save.settings.theme = btn.dataset.theme;
+        const theme = btn.dataset.theme;
+        const unlocked = Game.save.unlocks.themes.includes(theme);
+        if (!unlocked) {
+          showToast("Compre esse tema na loja primeiro.");
+          return;
+        }
+        Game.save.settings.theme = theme;
         applyTheme();
         saveGame();
-      });
-    });
-
-    $$("#lang-options .settings-option").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        $$("#lang-options .settings-option").forEach((x) => x.classList.remove("active"));
-        btn.classList.add("active");
-        Game.save.settings.lang = btn.dataset.lang;
-        document.body.dataset.lang = btn.dataset.lang;
-        saveGame();
+        updateMenu();
+        showToast("Tema aplicado.");
       });
     });
 
     $("btn-reset-data")?.addEventListener("click", () => {
-      if (confirm("Apagar progresso?")) {
+      if (confirm("Apagar todo o progresso salvo?")) {
         localStorage.removeItem(SAVE_KEY);
         location.reload();
       }
@@ -312,15 +425,26 @@
     Player.jumping = false;
     Player.sliding = false;
     Player.slideTimer = 0;
+
+    const skin = Game.save.equipped.skin;
+    if (skin === "guardian") Player.color = "#9be7ff";
+    else if (skin === "runner") Player.color = "#ffe600";
+    else Player.color = "#00e5ff";
   }
 
   function resetRun() {
     Game.score = 0;
     Game.coins = 0;
     Game.gems = 0;
-    Game.speed = 1;
+    Game.speed = Game.save.equipped.speed ? 1.18 : 1;
     Game.lives = 3;
     Game.over = false;
+    Game.paused = false;
+    Game.questionActive = false;
+    Game.elapsed = 0;
+    Game.lastTime = 0;
+    Game.questionTimer = 0;
+    Game.invulnerableTimer = 0;
 
     Obstacles.length = 0;
     Coins.length = 0;
@@ -330,6 +454,7 @@
     updateHUD();
     $("modal-gameover")?.classList.add("hidden");
     $("modal-pause")?.classList.add("hidden");
+    $("modal-quiz")?.classList.add("hidden");
   }
 
   function startGame() {
@@ -337,16 +462,14 @@
     resizeCanvas();
     resetRun();
     Game.running = true;
-    Game.paused = false;
     showScreen("game");
     startLoop();
   }
 
   function pauseGame() {
-    if (!Game.running || Game.over) return;
+    if (!Game.running || Game.over || Game.questionActive) return;
     Game.paused = true;
     $("modal-pause")?.classList.remove("hidden");
-    cancelAnimationFrame(Game.loopId);
   }
 
   function resumeGame() {
@@ -359,38 +482,40 @@
   function exitToMenu() {
     Game.running = false;
     Game.paused = false;
+    Game.questionActive = false;
     cancelAnimationFrame(Game.loopId);
     $("modal-pause")?.classList.add("hidden");
     $("modal-gameover")?.classList.add("hidden");
+    $("modal-quiz")?.classList.add("hidden");
     openMenu();
   }
 
   function moveLeft() {
-    if (!Game.running || Game.paused) return;
+    if (!Game.running || Game.paused || Game.questionActive) return;
     Player.targetLane = Math.max(0, Player.targetLane - 1);
   }
 
   function moveRight() {
-    if (!Game.running || Game.paused) return;
+    if (!Game.running || Game.paused || Game.questionActive) return;
     Player.targetLane = Math.min(2, Player.targetLane + 1);
   }
 
   function jump() {
-    if (!Game.running || Game.paused) return;
+    if (!Game.running || Game.paused || Game.questionActive) return;
     if (Player.jumping) return;
     Player.jumping = true;
     Player.vy = Player.jumpForce;
   }
 
   function slide() {
-    if (!Game.running || Game.paused) return;
+    if (!Game.running || Game.paused || Game.questionActive) return;
     if (Player.sliding) return;
     Player.sliding = true;
     Player.slideTimer = 28;
   }
 
   function updatePlayer() {
-    Player.x += (LANES[Player.targetLane] - Player.x) * 0.18;
+    Player.x += (LANES[Player.targetLane] - Player.x) * 0.2;
     Player.vy += Player.gravity;
     Player.y += Player.vy;
 
@@ -404,19 +529,52 @@
     else Player.sliding = false;
   }
 
+  function laneBusyAtSpawn(lane) {
+    return Obstacles.some((o) => o.lane === lane && o.z < 180);
+  }
+
   function spawnObstacle() {
-    if (Math.random() < 0.02) {
+    const p = 0.025 + Game.speed * 0.003;
+    if (Math.random() >= p) return;
+
+    const lane = Math.floor(Math.random() * 3);
+    if (laneBusyAtSpawn(lane)) return;
+
+    const typeRoll = Math.random();
+
+    if (typeRoll < 0.35) {
       Obstacles.push({
-        lane: Math.floor(Math.random() * 3),
-        z: -120,
-        w: 70,
-        h: 70 + Math.random() * 70
+        type: "barreira",
+        lane,
+        z: -140,
+        w: 78,
+        h: 70
       });
+      return;
     }
+
+    if (typeRoll < 0.68) {
+      Obstacles.push({
+        type: "humano",
+        lane,
+        z: -130,
+        w: 52,
+        h: 95
+      });
+      return;
+    }
+
+    Obstacles.push({
+      type: "trem",
+      lane,
+      z: -260,
+      w: 110,
+      h: 210
+    });
   }
 
   function spawnCoin() {
-    if (Math.random() < 0.035) {
+    if (Math.random() < 0.034) {
       Coins.push({
         lane: Math.floor(Math.random() * 3),
         z: -40
@@ -425,7 +583,7 @@
   }
 
   function spawnGem() {
-    if (Math.random() < 0.006) {
+    if (Math.random() < 0.0065) {
       Gems.push({
         lane: Math.floor(Math.random() * 3),
         z: -50
@@ -442,9 +600,20 @@
   }
 
   function damage() {
-    if (Game.over) return;
+    if (Game.over || Game.invulnerableTimer > 0) return;
+
+    if (Game.save.equipped.shield) {
+      Game.save.equipped.shield = false;
+      Game.invulnerableTimer = 45;
+      saveGame();
+      showToast("Escudo protegeu voce.");
+      return;
+    }
+
     Game.lives--;
+    Game.invulnerableTimer = 45;
     updateLives();
+
     if (Game.lives <= 0) gameOver();
   }
 
@@ -455,24 +624,43 @@
     const ph = Player.sliding ? 56 : Player.height;
     const playerTop = py + (Player.height - ph);
     const playerBottom = py + Player.height;
+
     const obsTop = o.z;
     const obsBottom = o.z + o.h;
 
-    if (Player.jumping && playerBottom < obsTop + 20) return false;
+    if (o.type === "barreira") {
+      if (Player.jumping && playerBottom < obsTop + 22) return false;
+      return obsBottom > playerTop && obsTop < playerBottom;
+    }
 
-    return obsBottom > playerTop && obsTop < playerBottom;
+    if (o.type === "humano") {
+      return obsBottom > playerTop + 8 && obsTop < playerBottom - 8;
+    }
+
+    if (o.type === "trem") {
+      return obsBottom > playerTop && obsTop < playerBottom;
+    }
+
+    return false;
   }
 
   function checkItemCollision(item) {
-    if (!hitLane(item.lane)) return false;
+    const laneMatch = hitLane(item.lane);
     const py = playerScreenY();
+
+    if (Game.save.equipped.magnet && Math.abs(item.lane - Player.targetLane) <= 1 && item.z > py - 140 && item.z < py + 160) {
+      return true;
+    }
+
+    if (!laneMatch) return false;
     return item.z > py - 30 && item.z < py + 100;
   }
 
   function updateObstacles() {
     for (let i = Obstacles.length - 1; i >= 0; i--) {
       const o = Obstacles[i];
-      o.z += 10 * Game.speed;
+      const speedFactor = o.type === "trem" ? 13 : 10;
+      o.z += speedFactor * Game.speed;
 
       if (checkObstacleCollision(o)) {
         Obstacles.splice(i, 1);
@@ -480,7 +668,7 @@
         continue;
       }
 
-      if (o.z > Game.height + 120) Obstacles.splice(i, 1);
+      if (o.z > Game.height + 240) Obstacles.splice(i, 1);
     }
   }
 
@@ -496,7 +684,7 @@
         continue;
       }
 
-      if (c.z > Game.height + 60) Coins.splice(i, 1);
+      if (c.z > Game.height + 80) Coins.splice(i, 1);
     }
   }
 
@@ -512,7 +700,7 @@
         continue;
       }
 
-      if (g.z > Game.height + 60) Gems.splice(i, 1);
+      if (g.z > Game.height + 80) Gems.splice(i, 1);
     }
   }
 
@@ -535,7 +723,8 @@
     if (text) text.textContent = `Nivel ${Game.save.player.level}`;
     if (toast) {
       toast.classList.remove("hidden");
-      setTimeout(() => toast.classList.add("hidden"), 2200);
+      clearTimeout(showLevelUp._timer);
+      showLevelUp._timer = setTimeout(() => toast.classList.add("hidden"), 2200);
     }
   }
 
@@ -555,8 +744,8 @@
     const list = $("ranking-list");
     const empty = $("ranking-empty");
     if (!list) return;
-    list.innerHTML = "";
 
+    list.innerHTML = "";
     const ranking = Game.save.ranking || [];
 
     if (!ranking.length) empty?.classList.remove("hidden");
@@ -581,6 +770,39 @@
     if ($("podium-3-score")) $("podium-3-score").textContent = ranking[2]?.score || "0";
   }
 
+  function getShopButtonState(type, item) {
+    if (type === "skins") {
+      const owned = Game.save.unlocks.skins.includes(item.id);
+      const equipped = Game.save.equipped.skin === item.id;
+      if (equipped) return { label: "Equipado", disabled: false };
+      if (owned) return { label: "Equipar", disabled: false };
+      return { label: `🪙 ${item.price}`, disabled: Game.save.player.coins < item.price };
+    }
+
+    if (type === "themes") {
+      const owned = Game.save.unlocks.themes.includes(item.id);
+      const active = Game.save.settings.theme === item.id;
+      if (active) return { label: "Ativo", disabled: false };
+      if (owned) return { label: "Usar", disabled: false };
+      return { label: `🪙 ${item.price}`, disabled: Game.save.player.coins < item.price };
+    }
+
+    if (type === "powerups") {
+      const owned = Game.save.unlocks.powerups.includes(item.id);
+      const equipped = item.id === "shield"
+        ? Game.save.equipped.shield
+        : item.id === "speed"
+        ? Game.save.equipped.speed
+        : Game.save.equipped.magnet;
+
+      if (equipped) return { label: "Ativo", disabled: false };
+      if (owned) return { label: "Ativar", disabled: false };
+      return { label: `🪙 ${item.price}`, disabled: Game.save.player.coins < item.price };
+    }
+
+    return { label: `🪙 ${item.price}`, disabled: false };
+  }
+
   function renderShopCategory(type) {
     const grid = $("shop-grid-" + type);
     const tpl = $("template-shop-card");
@@ -593,12 +815,14 @@
       card.querySelector(".shop-card-icon").textContent = item.icon;
       card.querySelector(".shop-card-name").textContent = item.name;
       card.querySelector(".shop-card-desc").textContent = item.desc || "";
-      card.querySelector(".buy-icon").textContent = "🪙";
-      card.querySelector(".buy-price").textContent = item.price;
 
       const btn = card.querySelector(".shop-card-buy");
-      btn.addEventListener("click", () => buyItem(type, item));
+      const state = getShopButtonState(type, item);
+      btn.innerHTML = `<span>${state.label}</span>`;
+      if (state.disabled) btn.classList.add("disabled");
+      else btn.classList.remove("disabled");
 
+      btn.addEventListener("click", () => buyItem(type, item));
       grid.appendChild(card);
     });
   }
@@ -610,17 +834,119 @@
   }
 
   function buyItem(type, item) {
-    if (Game.save.player.coins < item.price) return;
-    Game.save.player.coins -= item.price;
-
-    if (type === "themes") {
-      Game.save.settings.theme = item.id;
-      applyTheme();
+    if (type === "skins") {
+      const owned = Game.save.unlocks.skins.includes(item.id);
+      if (!owned) {
+        if (Game.save.player.coins < item.price) {
+          showToast("Moedas insuficientes.");
+          return;
+        }
+        Game.save.player.coins -= item.price;
+        Game.save.unlocks.skins.push(item.id);
+      }
+      Game.save.equipped.skin = item.id;
+      saveGame();
+      updateMenu();
+      renderShop();
+      showToast("Skin equipada.");
+      return;
     }
 
-    saveGame();
-    updateMenu();
-    renderShop();
+    if (type === "themes") {
+      const owned = Game.save.unlocks.themes.includes(item.id);
+      if (!owned) {
+        if (Game.save.player.coins < item.price) {
+          showToast("Moedas insuficientes.");
+          return;
+        }
+        Game.save.player.coins -= item.price;
+        Game.save.unlocks.themes.push(item.id);
+      }
+      Game.save.settings.theme = item.id;
+      applyTheme();
+      saveGame();
+      updateMenu();
+      renderShop();
+      showToast("Tema aplicado.");
+      return;
+    }
+
+    if (type === "powerups") {
+      const owned = Game.save.unlocks.powerups.includes(item.id);
+      if (!owned) {
+        if (Game.save.player.coins < item.price) {
+          showToast("Moedas insuficientes.");
+          return;
+        }
+        Game.save.player.coins -= item.price;
+        Game.save.unlocks.powerups.push(item.id);
+      }
+
+      if (item.id === "shield") Game.save.equipped.shield = true;
+      if (item.id === "speed") Game.save.equipped.speed = !Game.save.equipped.speed;
+      if (item.id === "magnet") Game.save.equipped.magnet = !Game.save.equipped.magnet;
+
+      saveGame();
+      updateMenu();
+      renderShop();
+      showToast("Power-up atualizado.");
+    }
+  }
+
+  function askQuestion() {
+    if (!Game.running || Game.paused || Game.over || Game.questionActive) return;
+
+    Game.questionActive = true;
+    const modal = $("modal-quiz");
+    const qText = $("quiz-question");
+    const optionsWrap = $("quiz-options");
+    const feedback = $("quiz-feedback");
+
+    if (!modal || !qText || !optionsWrap || !feedback) return;
+
+    const q = QUIZ[Math.floor(Math.random() * QUIZ.length)];
+    qText.textContent = q.question;
+    optionsWrap.innerHTML = "";
+    feedback.textContent = "";
+
+    q.options.forEach((option, index) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "quiz-option";
+      btn.textContent = option;
+      btn.addEventListener("click", () => answerQuestion(q, index, btn));
+      optionsWrap.appendChild(btn);
+    });
+
+    modal.classList.remove("hidden");
+  }
+
+  function answerQuestion(question, selectedIndex, selectedButton) {
+    const options = $$("#quiz-options .quiz-option");
+    options.forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === question.correct) btn.classList.add("correct");
+    });
+
+    const feedback = $("quiz-feedback");
+
+    if (selectedIndex === question.correct) {
+      selectedButton.classList.add("correct");
+      Game.score += 40;
+      Game.coins += 5;
+      if (feedback) feedback.textContent = "Resposta correta. " + question.explanation;
+    } else {
+      selectedButton.classList.add("wrong");
+      if (feedback) feedback.textContent = "Resposta incorreta. " + question.explanation;
+      damage();
+    }
+
+    updateHUD();
+
+    setTimeout(() => {
+      $("modal-quiz")?.classList.add("hidden");
+      Game.questionActive = false;
+    }, 1800);
   }
 
   function gameOver() {
@@ -628,7 +954,7 @@
     Game.over = true;
     cancelAnimationFrame(Game.loopId);
 
-    const earnedXP = Math.floor(Game.score / 20);
+    const earnedXP = Math.floor(Game.score / 18);
 
     Game.save.player.coins += Game.coins;
     Game.save.player.gems += Game.gems;
@@ -658,14 +984,16 @@
     const ctx = Game.ctx;
     const w = Game.width;
     const h = Game.height;
+    const cx = w / 2;
 
-    ctx.fillStyle = "#0d0221";
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--bg-deep");
     ctx.fillRect(0, 0, w, h);
 
-    ctx.fillStyle = "#1a0b3d";
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--bg-mid");
     ctx.fillRect(0, h - 180, w, 180);
 
-    const cx = w / 2;
     ctx.strokeStyle = "rgba(255,255,255,0.15)";
     ctx.lineWidth = 4;
 
@@ -674,6 +1002,11 @@
       ctx.moveTo(cx + LANES[i], 0);
       ctx.lineTo(cx + LANES[i], h - 140);
       ctx.stroke();
+    }
+
+    ctx.fillStyle = "rgba(255,255,255,0.06)";
+    for (let y = 60; y < h - 140; y += 55) {
+      ctx.fillRect(cx - 180, y, 360, 3);
     }
   }
 
@@ -685,32 +1018,82 @@
     const y = Game.groundY - height + Player.y;
     const r = 14;
 
-    ctx.fillStyle = "#00e5ff";
+    if (Game.invulnerableTimer > 0 && Math.floor(Game.invulnerableTimer / 4) % 2 === 0) {
+      return;
+    }
+
+    ctx.fillStyle = Player.color;
     ctx.beginPath();
     if (ctx.roundRect) {
       ctx.roundRect(x, y, Player.width, height, r);
     } else {
-      ctx.moveTo(x + r, y);
-      ctx.lineTo(x + Player.width - r, y);
-      ctx.quadraticCurveTo(x + Player.width, y, x + Player.width, y + r);
-      ctx.lineTo(x + Player.width, y + height - r);
-      ctx.quadraticCurveTo(x + Player.width, y + height, x + Player.width - r, y + height);
-      ctx.lineTo(x + r, y + height);
-      ctx.quadraticCurveTo(x, y + height, x, y + height - r);
-      ctx.lineTo(x, y + r);
-      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.rect(x, y, Player.width, height);
     }
     ctx.fill();
+
+    ctx.fillStyle = "#09111a";
+    ctx.beginPath();
+    ctx.arc(x + Player.width / 2, y + 18, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (Game.save.equipped.shield) {
+      ctx.strokeStyle = "#7afcff";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(x + Player.width / 2, y + height / 2, Math.max(Player.width, height) * 0.62, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  function drawObstacle(o) {
+    const ctx = Game.ctx;
+    const cx = Game.width / 2;
+    const x = cx + LANES[o.lane] - o.w / 2;
+    const y = o.z;
+
+    if (o.type === "barreira") {
+      ctx.fillStyle = "#ff7a59";
+      ctx.fillRect(x, y, o.w, o.h);
+      ctx.fillStyle = "#fff";
+      for (let i = 0; i < 4; i++) {
+        ctx.fillRect(x + 8 + i * 16, y + 10, 8, o.h - 20);
+      }
+      return;
+    }
+
+    if (o.type === "humano") {
+      ctx.fillStyle = "#ffe0bd";
+      ctx.beginPath();
+      ctx.arc(x + o.w / 2, y + 18, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#5ec2ff";
+      ctx.fillRect(x + 12, y + 34, o.w - 24, 34);
+
+      ctx.fillStyle = "#223";
+      ctx.fillRect(x + 16, y + 68, 8, 24);
+      ctx.fillRect(x + o.w - 24, y + 68, 8, 24);
+      return;
+    }
+
+    if (o.type === "trem") {
+      ctx.fillStyle = "#c3165b";
+      ctx.fillRect(x, y, o.w, o.h);
+
+      ctx.fillStyle = "#7afcff";
+      ctx.fillRect(x + 12, y + 16, o.w - 24, 32);
+
+      ctx.fillStyle = "#111";
+      ctx.fillRect(x + 16, y + o.h - 32, 20, 18);
+      ctx.fillRect(x + o.w - 36, y + o.h - 32, 20, 18);
+
+      ctx.fillStyle = "#ffe600";
+      ctx.fillRect(x + o.w / 2 - 10, y + o.h - 48, 20, 8);
+    }
   }
 
   function drawObstacles() {
-    const ctx = Game.ctx;
-    const cx = Game.width / 2;
-    ctx.fillStyle = "#ff2e9a";
-
-    Obstacles.forEach((o) => {
-      ctx.fillRect(cx + LANES[o.lane] - o.w / 2, o.z, o.w, o.h);
-    });
+    Obstacles.forEach(drawObstacle);
   }
 
   function drawCoins() {
@@ -741,7 +1124,14 @@
     drawGems();
   }
 
-  function update() {
+  function update(delta) {
+    if (Game.questionActive) return;
+
+    Game.elapsed += delta;
+    Game.questionTimer += delta;
+
+    if (Game.invulnerableTimer > 0) Game.invulnerableTimer--;
+
     updatePlayer();
     spawnObstacle();
     spawnCoin();
@@ -750,21 +1140,34 @@
     updateCoins();
     updateGems();
 
-    Game.score += 0.8 * Game.speed;
-    Game.speed = Math.min(Game.speed + 0.0006, 2.6);
+    Game.score += 0.75 * Game.speed;
+    Game.speed = Math.min(Game.speed + 0.00055, 2.8);
+
+    if (Game.questionTimer >= 9000) {
+      Game.questionTimer = 0;
+      askQuestion();
+    }
 
     updateHUD();
   }
 
-  function loop() {
-    if (!Game.running || Game.paused) return;
-    update();
+  function loop(timestamp) {
+    if (!Game.running || Game.paused || Game.over) return;
+
+    const delta = Game.lastTime ? timestamp - Game.lastTime : 16.67;
+    Game.lastTime = timestamp;
+
+    update(delta);
     draw();
-    Game.loopId = requestAnimationFrame(loop);
+
+    if (Game.running && !Game.paused && !Game.over) {
+      Game.loopId = requestAnimationFrame(loop);
+    }
   }
 
   function startLoop() {
     cancelAnimationFrame(Game.loopId);
+    Game.lastTime = 0;
     Game.loopId = requestAnimationFrame(loop);
   }
 
@@ -776,7 +1179,7 @@
         return;
       }
 
-      if (!Game.running || Game.paused) return;
+      if (!Game.running || Game.paused || Game.questionActive) return;
 
       switch (e.code) {
         case "ArrowLeft":
@@ -815,18 +1218,18 @@
     }, { passive: true });
 
     layer.addEventListener("touchend", (e) => {
-      if (!Game.running || Game.paused) return;
+      if (!Game.running || Game.paused || Game.questionActive) return;
 
       const t = e.changedTouches[0];
       const dx = t.clientX - sx;
       const dy = t.clientY - sy;
 
       if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 40) moveRight();
-        if (dx < -40) moveLeft();
+        if (dx > 35) moveRight();
+        if (dx < -35) moveLeft();
       } else {
-        if (dy < -40) jump();
-        if (dy > 40) slide();
+        if (dy < -35) jump();
+        if (dy > 35) slide();
       }
     }, { passive: true });
   }
@@ -834,7 +1237,10 @@
   function bindMenu() {
     $("btn-play")?.addEventListener("click", startGame);
     $("btn-howto")?.addEventListener("click", () => showScreen("howto"));
-    $("btn-shop")?.addEventListener("click", () => showScreen("shop"));
+    $("btn-shop")?.addEventListener("click", () => {
+      renderShop();
+      showScreen("shop");
+    });
     $("btn-settings")?.addEventListener("click", () => showScreen("settings"));
     $("btn-ranking")?.addEventListener("click", () => {
       renderRanking();
@@ -844,6 +1250,10 @@
     $$(".btn-back").forEach((btn) => btn.addEventListener("click", openMenu));
 
     $("btn-login-confirm")?.addEventListener("click", confirmLogin);
+    $("input-login-name")?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") confirmLogin();
+    });
+
     $("btn-edit-name")?.addEventListener("click", () => showScreen("settings"));
 
     $("btn-pause")?.addEventListener("click", pauseGame);
@@ -877,6 +1287,7 @@
       Game.save.settings.muted = !Game.save.settings.muted;
       $("btn-mute").dataset.state = Game.save.settings.muted ? "muted" : "unmuted";
       saveGame();
+      showToast(Game.save.settings.muted ? "Audio silenciado." : "Audio ativado.");
     });
 
     $("btn-fullscreen")?.addEventListener("click", async () => {
@@ -895,7 +1306,6 @@
 
   function boot() {
     applyTheme();
-    document.body.dataset.lang = Game.save.settings.lang || "pt";
 
     if ($("btn-mute")) {
       $("btn-mute").dataset.state = Game.save.settings.muted ? "muted" : "unmuted";
@@ -920,4 +1330,3 @@
     boot();
   }
 })();
-
